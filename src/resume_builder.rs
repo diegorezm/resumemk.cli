@@ -7,11 +7,11 @@ use headless_chrome::{Browser, LaunchOptions};
 use markdown::{to_html_with_options, CompileOptions, Options};
 
 #[derive(Debug, Clone)]
-pub struct ResumeBuilder {
+pub struct CLIResumeBuilder {
     stylesheet: String,
 }
 
-impl ResumeBuilder {
+impl CLIResumeBuilder {
     pub fn new() -> Self {
         let stylesheet = Self::get_default_stylesheet();
         Self { stylesheet }
@@ -87,6 +87,7 @@ impl ResumeBuilder {
         Ok(())
     }
 
+    #[allow(dead_code)]
     pub fn to_html_string(
         &self,
         input: &Path,
@@ -105,6 +106,7 @@ impl ResumeBuilder {
         Ok(html)
     }
 
+    #[allow(dead_code)]
     pub fn to_pdf_bytes(
         &self,
         input: &Path,

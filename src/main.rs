@@ -1,8 +1,7 @@
 mod cli;
 mod resume_builder;
-
 use cli::{get_output_path, init_cli, Command, OutputType};
-use resume_builder::ResumeBuilder;
+use resume_builder::CLIResumeBuilder;
 
 fn main() {
     let cli = init_cli();
@@ -15,22 +14,18 @@ fn main() {
             title,
         } => {
             let output_path = get_output_path(&input, &output, &output_type);
-            let mut document_title = output_path.to_str().unwrap().to_string();
-            let mut resume_builder = ResumeBuilder::new();
+            let document_title = title.unwrap_or(output_path.to_str().unwrap().to_string());
+            let mut cli_resume_builder = CLIResumeBuilder::new();
 
             if let Some(stylesheet) = stylesheet {
-                resume_builder.set_stylesheet(stylesheet);
-            }
-
-            if let Some(title) = title {
-                document_title = title;
+                cli_resume_builder.set_stylesheet(stylesheet);
             }
 
             let pdf_options = headless_chrome::types::PrintToPdfOptions::default();
 
             match output_type {
                 OutputType::HTML => {
-                    match resume_builder.save_to_html(
+                    match cli_resume_builder.save_to_html(
                         input.as_path(),
                         output_path.as_path(),
                         document_title.as_str(),
@@ -44,7 +39,7 @@ fn main() {
                     }
                 }
                 OutputType::PDF => {
-                    match resume_builder.save_to_pdf(
+                    match cli_resume_builder.save_to_pdf(
                         input.as_path(),
                         output_path.as_path(),
                         pdf_options,
