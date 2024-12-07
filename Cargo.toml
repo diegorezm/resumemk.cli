@@ -1,0 +1,16 @@
+[package]
+name = "resumemk"
+version = "0.1.0"
+edition = "2021"
+authors = ["Diego Rezende <diegommrez12@gmail.com>"]
+description = "Generate a resume from a markdown file"
+license = "MIT"
+
+[dependencies]
+headless_chrome = "1.0.15"
+clap = { version = "4.5.22", features = ["derive"] }
+markdown = "1.0.0-alpha.21"
+
+[[bin]]
+name = "resumemk"
+path = "src/main.rs"
