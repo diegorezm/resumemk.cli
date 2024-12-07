@@ -17,8 +17,8 @@ impl CLIResumeBuilder {
         Self { stylesheet }
     }
 
-    pub fn set_stylesheet(&mut self, stylesheet: String) {
-        self.stylesheet = stylesheet;
+    pub fn set_stylesheet(&mut self, stylesheet: &Path) {
+        self.stylesheet = std::fs::read_to_string(stylesheet).unwrap_or("".to_string());
     }
 
     pub fn save_to_html(

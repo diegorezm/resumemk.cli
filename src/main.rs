@@ -18,7 +18,7 @@ fn main() {
             let mut cli_resume_builder = CLIResumeBuilder::new();
 
             if let Some(stylesheet) = stylesheet {
-                cli_resume_builder.set_stylesheet(stylesheet);
+                cli_resume_builder.set_stylesheet(stylesheet.as_path());
             }
 
             let pdf_options = headless_chrome::types::PrintToPdfOptions::default();

@@ -26,7 +26,7 @@ pub enum Command {
 
         /// Set a custom stylesheet for the output. Defaults to the default stylesheet.
         #[clap(short, long)]
-        stylesheet: Option<String>,
+        stylesheet: Option<PathBuf>,
 
         // Set the title of the resume. Defaults to the input file name.
         #[clap(long)]
