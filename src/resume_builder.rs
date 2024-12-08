@@ -135,3 +135,79 @@ impl CLIResumeBuilder {
         return include_str!("../public/resume.css").to_string();
     }
 }
+
+#[derive(Debug, Clone)]
+pub struct TCPResumeBuilder {
+    stylesheet: String,
+    default_html_path: String,
+}
+
+impl TCPResumeBuilder {
+    pub fn new() -> Self {
+        let stylesheet = Self::get_default_stylesheet();
+        let default_html_path = "/tmp/resume.html".to_string();
+        Self {
+            stylesheet,
+            default_html_path,
+        }
+    }
+
+    fn save_to_html(
+        &self,
+        markdown: String,
+        title: &str,
+    ) -> Result<String, Box<dyn std::error::Error>> {
+        let markdown = to_html_with_options(
+            markdown.as_str(),
+            &Options {
+                compile: CompileOptions {
+                    allow_dangerous_html: true,
+                    ..CompileOptions::default()
+                },
+                ..Options::default()
+            },
+        )
+        .map_err(|e| e.to_string())?;
+
+        let html_raw = include_str!("../public/resume.html");
+        let html = html_raw
+            .replace("{content}", &markdown)
+            .replace(
+                "<!-- style -->",
+                &format!("<style>{}</style>", &self.stylesheet),
+            )
+            .replace("{title}", title);
+
+        let mut output_file = File::create(self.default_html_path.clone())?;
+        output_file.write_all(html.as_bytes())?;
+
+        let full_path = fs::canonicalize(self.default_html_path.clone())?
+            .to_str()
+            .ok_or("Failed to convert full path to string")?
+            .to_string();
+        Ok(full_path)
+    }
+
+    pub fn to_pdf(
+        &self,
+        markdown: String,
+        title: String,
+        pdf_options: PrintToPdfOptions,
+    ) -> Vec<u8> {
+        let html_file = self.save_to_html(markdown, title.as_str()).unwrap();
+        let html_url = format!("file://{}", html_file);
+        let browser = Browser::new(LaunchOptions::default()).unwrap();
+        let tab = browser.new_tab().unwrap();
+
+        tab.navigate_to(&html_url).unwrap();
+        tab.wait_until_navigated().unwrap();
+        let bytes = tab.print_to_pdf(Some(pdf_options)).unwrap();
+
+        std::fs::remove_file(html_file).unwrap();
+        bytes
+    }
+
+    fn get_default_stylesheet() -> String {
+        return include_str!("../public/resume.css").to_string();
+    }
+}

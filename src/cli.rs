@@ -32,6 +32,14 @@ pub enum Command {
         #[clap(long)]
         title: Option<String>,
     },
+
+    #[cfg(feature = "server")]
+    #[command(about = "Open a markdown editor in your web browser")]
+    Serve {
+        /// Port to listen on. Defaults to 8080.
+        #[clap(short, long, default_value = "8080")]
+        port: u16,
+    },
 }
 
 #[derive(Debug, Clone)]

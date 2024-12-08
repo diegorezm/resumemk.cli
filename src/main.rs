@@ -1,11 +1,17 @@
 mod cli;
 mod resume_builder;
+#[cfg(feature = "server")]
+mod server;
 use cli::{get_output_path, init_cli, Command, OutputType};
 use resume_builder::CLIResumeBuilder;
 
 fn main() {
     let cli = init_cli();
     match cli.command {
+        #[cfg(feature = "server")]
+        Command::Serve { port } => {
+            server::init_server(Some(port));
+        }
         Command::Build {
             input,
             output,
