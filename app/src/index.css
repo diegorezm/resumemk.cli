@@ -11,3 +11,13 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+@layer base {}
+
+.w-md-editor-toolbar {
+  @apply bg-base-300 text-2xl
+}
+
+.w-md-editor-area {
+  @apply bg-base-100 text-base-content text-lg
+}

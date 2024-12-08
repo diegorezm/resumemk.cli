@@ -12,5 +12,12 @@ export default {
   plugins: [
     daisyui,
   ],
+  daisyui: {
+    styled: true,
+    themes: [
+      'light',
+      'dark',
+      'synthwave',
+    ]
+  }
 }
-
