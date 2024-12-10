@@ -4,6 +4,19 @@ Resumemk is a simple resume builder written in Rust.
 Keep you mind this project uses headless chrome to generate the pdf.
 So you need to have chrome/chromium installed on your machine.
 
+## Self hosting
+
+You can self host this project by using docker.
+steps:
+
+1. Build the docker image
+
+```bash
+docker-compose up -d
+```
+
+2. Open http://localhost:8080 in your browser
+
 ## Build
 
 This project comes with an http server that serves a basic markdown editor on your browser.
