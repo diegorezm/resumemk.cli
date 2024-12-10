@@ -9,15 +9,17 @@ use rust_embed::Embed;
 
 use crate::resume_builder::TCPResumeBuilder;
 
+use std::env;
+
 #[derive(Embed)]
 #[folder = "app/dist"]
 #[cfg(feature = "server")]
 struct Assets;
 
 #[cfg(feature = "server")]
-pub fn init_server(port: Option<u16>) {
-    let port = port.unwrap_or(8080);
-    let addr = format!("127.0.0.1:{}", port);
+pub fn init_server() {
+    let port = env::var("PORT").unwrap_or_else(|_| "10000".to_string());
+    let addr = format!("0.0.0.0:{}", port);
     let tcp_listener = TcpListener::bind(&addr).unwrap();
     println!("Listening on {}", addr);
     for stream in tcp_listener.incoming() {

@@ -9,8 +9,8 @@ fn main() {
     let cli = init_cli();
     match cli.command {
         #[cfg(feature = "server")]
-        Command::Serve { port } => {
-            server::init_server(Some(port));
+        Command::Serve {} => {
+            server::init_server();
         }
         Command::Build {
             input,
