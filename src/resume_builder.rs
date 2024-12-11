@@ -3,7 +3,7 @@ use std::io::Write;
 use std::path::Path;
 
 use headless_chrome::types::PrintToPdfOptions;
-use headless_chrome::{Browser, LaunchOptions};
+use headless_chrome::{Browser, LaunchOptions, LaunchOptionsBuilder};
 use markdown::{to_html_with_options, CompileOptions, Options};
 
 #[derive(Debug, Clone)]
@@ -71,7 +71,7 @@ impl CLIResumeBuilder {
 
         let input_url = format!("file://{}", input_html);
 
-        let browser = Browser::new(LaunchOptions::default())?;
+        let browser = Browser::new(LaunchOptionsBuilder::default().build()?)?;
         let tab = browser.new_tab()?;
         tab.navigate_to(&input_url)?;
         tab.wait_until_navigated()?;
@@ -196,14 +196,49 @@ impl TCPResumeBuilder {
     ) -> Vec<u8> {
         let html_file = self.save_to_html(markdown, title.as_str()).unwrap();
         let html_url = format!("file://{}", html_file);
-        let browser = Browser::new(LaunchOptions::default()).unwrap();
-        let tab = browser.new_tab().unwrap();
 
-        tab.navigate_to(&html_url).unwrap();
-        tab.wait_until_navigated().unwrap();
-        let bytes = tab.print_to_pdf(Some(pdf_options)).unwrap();
+        let options = LaunchOptionsBuilder::default()
+            .headless(true)
+            .sandbox(false)
+            .build()
+            .unwrap();
 
-        std::fs::remove_file(html_file).unwrap();
+        let browser = Browser::new(options)
+            .map_err(|e| {
+                eprintln!("Error while creating browser: {}", e);
+            })
+            .unwrap();
+        let tab = browser
+            .new_tab()
+            .map_err(|e| {
+                eprintln!("Error while creating new tab: {}", e);
+            })
+            .unwrap();
+
+        tab.navigate_to(&html_url)
+            .map_err(|e| {
+                eprintln!("Error while navigating to URL: {}", e);
+            })
+            .unwrap();
+
+        tab.wait_until_navigated()
+            .map_err(|e| {
+                eprintln!("Error while waiting for navigation: {}", e);
+            })
+            .unwrap();
+
+        let bytes = tab
+            .print_to_pdf(Some(pdf_options))
+            .map_err(|e| {
+                eprintln!("Error while printing to PDF: {}", e);
+            })
+            .unwrap();
+
+        std::fs::remove_file(html_file)
+            .map_err(|e| {
+                eprintln!("Error while removing HTML file: {}", e);
+            })
+            .unwrap();
         bytes
     }
 
