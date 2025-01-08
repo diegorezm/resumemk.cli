@@ -1,17 +1,17 @@
 import MDEditor from "@uiw/react-md-editor";
-import {useEffect, useState} from "react";
-import {useTabStore} from "./store";
-import {Trash, Pencil, Download, Loader} from "./Icons";
+import { useEffect, useState } from "react";
+import { useTabStore } from "./store";
+import { Trash, Pencil, Download, Loader } from "./Icons";
 
 type Props = {
-  tab: App.Tab;
+  tab: Tab;
   toNextTab: () => void;
 };
 
 const DELAY = 1000;
 
-export default function Tab({tab, toNextTab}: Props) {
-  const {storeTabContent, removeTab, storeTabTitle} = useTabStore();
+export default function Tab({ tab, toNextTab }: Props) {
+  const { storeTabContent, removeTab, storeTabTitle } = useTabStore();
   const [isLoading, setIsLoading] = useState(false);
   const [content, setContent] = useState(tab.content);
   const [newTabTitle, setNewTabTitle] = useState(tab.title);

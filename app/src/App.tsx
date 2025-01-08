@@ -1,12 +1,12 @@
-import {useState} from "react";
-import {useTabStore} from "./store";
-import {genRandomId} from "./lib";
+import { useState } from "react";
+import { useTabStore } from "./store";
+import { genRandomId } from "./lib";
 import Tab from "./Tab";
-import {Plus} from "./Icons";
+import { Plus } from "./Icons";
 
 export default function App() {
-  const {tabs, addTab} = useTabStore();
-  const [currentTab, setCurrentTab] = useState<App.Tab | null>(tabs[0] || null);
+  const { tabs, addTab } = useTabStore();
+  const [currentTab, setCurrentTab] = useState<Tab | null>(tabs[0] || null);
   const [newTabTitle, setNewTabTitle] = useState("");
 
   const toNextTab = () => {
@@ -22,7 +22,7 @@ export default function App() {
 
   const createTab = (title = "New tab") => {
     const id = genRandomId();
-    addTab({id, title: title, content: ""});
+    addTab({ id, title: title, content: "" });
     const t = tabs.find(t => t.id === id);
     if (t) {
       setCurrentTab(t);

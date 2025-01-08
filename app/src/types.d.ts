@@ -1,7 +1,5 @@
-declare namespace App {
-  interface Tab {
-    id: string;
-    title: string;
-    content: string;
-  }
+type Tab = {
+  id: string;
+  title: string;
+  content: string;
 }
