@@ -1,5 +1,5 @@
-import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import {create} from "zustand";
+import {persist} from "zustand/middleware";
 
 interface TabState {
   tabs: Tab[];
@@ -19,10 +19,10 @@ export const useTabStore = create<TabState>()(
       tabs: state.tabs.filter((t) => t.id !== tab.id),
     })),
     storeTabContent: (content, tabId) => set((state) => ({
-      tabs: state.tabs.map((t) => (t.id === tabId ? { ...t, content } : t)),
+      tabs: state.tabs.map((t) => (t.id === tabId ? {...t, content} : t)),
     })),
     storeTabTitle: (title, tabId) => set((state) => ({
-      tabs: state.tabs.map((t) => (t.id === tabId ? { ...t, title } : t)),
+      tabs: state.tabs.map((t) => (t.id === tabId ? {...t, title} : t)),
     })),
   }), {
     name: "tabs",

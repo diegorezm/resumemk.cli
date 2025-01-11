@@ -1,23 +1,24 @@
-import daisyui from 'daisyui'
-
 /** @type {import('tailwindcss').Config} */
 export default {
+  darkMode: ["class"],
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        th: {
+          background: 'var(--background)',
+          foreground: 'var(--foreground)',
+          primary: 'var(--primary)',
+          secondary: 'var(--secondary)',
+          muted: 'var(--muted)',
+          red: 'var(--red)'
+        },
+      }
+    }
   },
-  plugins: [
-    daisyui,
-  ],
-  daisyui: {
-    styled: true,
-    themes: [
-      'light',
-      'dark',
-      'synthwave',
-    ]
-  }
+  plugins: [require("tailwindcss-animate")],
 }
+
