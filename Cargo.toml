@@ -8,16 +8,22 @@ license = "MIT"
 
 [dependencies]
 headless_chrome = "1.0.15"
-clap = { version = "4.5.22", features = ["derive"] }
 markdown = "1.0.0-alpha.21"
+clap = { version = "4.5.22", features = ["derive"] }
 rust-embed = "8.5.0"
 serde_json = "1.0.133"
 failure = "0.1.8"
 
-[features]
-default = ["server"]
-server = []
+[workspace]
+members = [
+  "apps/*",
+  "packages/*"
+]
 
 [[bin]]
-name = "resumemk"
-path = "src/main.rs"
+name = "cli"
+path = "apps/cli/src/main.rs"
+
+[[bin]]
+name = "server"
+path = "apps/server/src/main.rs"

@@ -1,0 +1,9 @@
+[package]
+name = "resume_builder"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+headless_chrome = "1.0.15"
+markdown = "1.0.0-alpha.21"
+failure = "0.1.8"

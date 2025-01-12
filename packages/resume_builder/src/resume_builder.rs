@@ -40,7 +40,7 @@ impl CLIResumeBuilder {
         )
         .map_err(|e| e.to_string())?;
 
-        let html_raw = include_str!("../public/resume.html");
+        let html_raw = include_str!("../template/resume.html");
         let html = html_raw
             .replace("{content}", &markdown)
             .replace(
@@ -95,7 +95,7 @@ impl CLIResumeBuilder {
     ) -> Result<String, Box<dyn std::error::Error>> {
         let input_file_contents = std::fs::read_to_string(input)?;
         let markdown = markdown::to_html(input_file_contents.as_str());
-        let html_raw = include_str!("../public/resume.html");
+        let html_raw = include_str!("../template/resume.html");
         let html = html_raw
             .replace("{content}", &markdown)
             .replace(
@@ -132,7 +132,7 @@ impl CLIResumeBuilder {
     }
 
     fn get_default_stylesheet() -> String {
-        return include_str!("../public/resume.css").to_string();
+        return include_str!("../template/resume.css").to_string();
     }
 }
 
@@ -169,7 +169,7 @@ impl TCPResumeBuilder {
         )
         .map_err(|e| e.to_string())?;
 
-        let html_raw = include_str!("../public/resume.html");
+        let html_raw = include_str!("../template/resume.html");
         let html = html_raw
             .replace("{content}", &markdown)
             .replace(
@@ -243,6 +243,6 @@ impl TCPResumeBuilder {
     }
 
     fn get_default_stylesheet() -> String {
-        return include_str!("../public/resume.css").to_string();
+        return include_str!("../template/resume.css").to_string();
     }
 }

@@ -2,21 +2,18 @@ use std::{
     collections::HashMap,
     io::{BufRead, BufReader, Read, Write},
     net::{TcpListener, TcpStream},
-    str::from_utf8,
 };
 
 use rust_embed::Embed;
 
-use crate::resume_builder::TCPResumeBuilder;
+use resume_builder::TCPResumeBuilder;
 
 use std::env;
 
 #[derive(Embed)]
 #[folder = "app/dist"]
-#[cfg(feature = "server")]
 struct Assets;
 
-#[cfg(feature = "server")]
 pub fn init_server() {
     let port = env::var("PORT").unwrap_or_else(|_| "10000".to_string());
     let addr = format!("0.0.0.0:{}", port);
@@ -118,7 +115,7 @@ fn handle_connection(mut stream: TcpStream) {
     }
 
     match serve_asset(path) {
-        Some(response) => stream.write_all(response.as_bytes()).unwrap(),
+        Some(response) => stream.write_all(&response).unwrap(),
         None => {
             let response = "HTTP/1.1 404 NOT FOUND\r\n\r\n404 Not Found";
             stream.write_all(response.as_bytes()).unwrap();
@@ -126,7 +123,7 @@ fn handle_connection(mut stream: TcpStream) {
     }
 }
 
-fn serve_asset(path: &str) -> Option<String> {
+fn serve_asset(path: &str) -> Option<Vec<u8>> {
     // Remove the leading `/` if present.
     let normalized_path = if path == "/" {
         "index.html"
@@ -137,13 +134,19 @@ fn serve_asset(path: &str) -> Option<String> {
     // Fetch the asset from embedded assets.
     if let Some(asset) = Assets::get(normalized_path) {
         let mime_type = infer_mime_type(normalized_path);
-        let content = from_utf8(asset.data.as_ref()).ok()?;
-        Some(format!(
-            "HTTP/1.1 200 OK\r\nContent-Type: {}\r\nContent-Length: {}\r\n\r\n{}",
+
+        // Create the HTTP response header.
+        let response_header = format!(
+            "HTTP/1.1 200 OK\r\nContent-Type: {}\r\nContent-Length: {}\r\n\r\n",
             mime_type,
-            content.len(),
-            content
-        ))
+            asset.data.len()
+        );
+
+        // Combine the header and the body into a single response.
+        let mut response = response_header.into_bytes();
+        response.extend_from_slice(&asset.data);
+
+        Some(response)
     } else {
         None // Asset not found.
     }
@@ -165,4 +168,8 @@ fn infer_mime_type(path: &str) -> &str {
     } else {
         "application/octet-stream"
     }
+}
+
+fn main() {
+    init_server();
 }

@@ -1,0 +1,11 @@
+[package]
+name = "resumemk_server"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+rust-embed = "8.5.0"
+serde_json = "1.0.133"
+headless_chrome = "1.0.15"
+failure = "0.1.8"
+resume_builder = {path = "../../packages/resume_builder"}
