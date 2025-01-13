@@ -3,7 +3,7 @@ FROM node:20.18.1-alpine3.21 AS frontend-builder
 WORKDIR /usr/src/app
 
 COPY apps/server/app ./
-RUN npm ci
+RUN npm i
 RUN npm run build
 
 # Backend Builder Stage

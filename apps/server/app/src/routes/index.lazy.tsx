@@ -54,7 +54,7 @@ function RouteComponent() {
               <Link to="/documents">
                 <Button size="lg">Web Editor</Button>
               </Link>
-              <a href="https://github.com/your-org/resume-builder-cli" target="_blank">
+              <a href="https://github.com/diegorezm/resumemk#build" target="_blank">
                 <Button size="lg" variant="outline">
                   CLI Tool
                 </Button>
