@@ -17,8 +17,12 @@ const genRandomId = () => {
   return Date.now().toString(36) + Math.random().toString(36).substring(2)
 };
 
+
+
 const ResumeCard = ({resume}: {resume: Resume}) => {
   const {removeResume} = useResumeStore()
+  const [loading, setLoading] = useState(false)
+
   return (
     <div
       className="overflow-hidden shadow-md rounded-md"
@@ -33,7 +37,17 @@ const ResumeCard = ({resume}: {resume: Resume}) => {
           >
             <Trash className="text-th-background" />
           </Button>
-          <Button variant="ghost" size="icon" onClick={() => downloadPDF(resume)}>
+          <Button variant="ghost" size="icon" disabled={loading} onClick={() => {
+            setLoading(true)
+            downloadPDF(resume)
+              .then(e => {
+                if (e.error !== undefined) {
+                  alert(e.error)
+                }
+
+              })
+              .finally(() => setLoading(false))
+          }}>
             <Download className="text-th-background" />
           </Button>
           <Link to="/documents/$documentId" params={{
