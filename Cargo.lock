@@ -828,7 +828,6 @@ dependencies = [
 name = "resumemk_server"
 version = "0.1.0"
 dependencies = [
- "failure",
  "headless_chrome",
  "resume_builder",
  "rust-embed",

@@ -27,3 +27,7 @@ path = "apps/cli/src/main.rs"
 [[bin]]
 name = "server"
 path = "apps/server/src/main.rs"
+
+[lib]
+name = "resume_builder"
+path = "packages/resume_builder/src/lib.rs"

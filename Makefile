@@ -1,7 +1,7 @@
 USER_HOME := $(shell echo ~)
 
 build-client:
-	cd apps/server/app && npm ci && npm run build
+	cd apps/server/app && pnpm i && pnpm run build
 
 build-server: build-client
 	cargo build -p resumemk_server --release
@@ -11,8 +11,7 @@ build-cli:
 
 
 install-server: build-server
-	cp target/release/resumemk_server $(USER_HOME)/.local/bin/resumemk_server
-	resumemk_server
+	./target/release/resumemk_server 
 
 install-cli: build-cli
 	cp target/release/resumemk_cli $(USER_HOME)/.local/bin/resumemk

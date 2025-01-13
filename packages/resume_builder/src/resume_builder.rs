@@ -6,15 +6,25 @@ use headless_chrome::types::PrintToPdfOptions;
 use headless_chrome::{Browser, LaunchOptions, LaunchOptionsBuilder};
 use markdown::{to_html_with_options, CompileOptions, Options};
 
+fn get_default_stylesheet() -> (String, String) {
+    let stylesheet = include_str!("../template/resume.css").to_string();
+    let base_stylesheet = include_str!("../template/base.css").to_string();
+    return (stylesheet, base_stylesheet);
+}
+
 #[derive(Debug, Clone)]
 pub struct CLIResumeBuilder {
     stylesheet: String,
+    base_stylesheet: String,
 }
 
 impl CLIResumeBuilder {
     pub fn new() -> Self {
-        let stylesheet = Self::get_default_stylesheet();
-        Self { stylesheet }
+        let (stylesheet, base_stylesheet) = get_default_stylesheet();
+        Self {
+            stylesheet,
+            base_stylesheet,
+        }
     }
 
     pub fn set_stylesheet(&mut self, stylesheet: &Path) {
@@ -45,7 +55,10 @@ impl CLIResumeBuilder {
             .replace("{content}", &markdown)
             .replace(
                 "<!-- style -->",
-                &format!("<style>{}</style>", &self.stylesheet),
+                &format!(
+                    "<style>{}{}</style>",
+                    &self.base_stylesheet, &self.stylesheet
+                ),
             )
             .replace("{title}", title);
 
@@ -100,7 +113,10 @@ impl CLIResumeBuilder {
             .replace("{content}", &markdown)
             .replace(
                 "<!-- style -->",
-                &format!("<style>{}</style>", &self.stylesheet),
+                &format!(
+                    "<style>{}{}</style>",
+                    &self.base_stylesheet, &self.stylesheet
+                ),
             )
             .replace("{title}", title);
         Ok(html)
@@ -130,25 +146,23 @@ impl CLIResumeBuilder {
 
         Ok(bytes)
     }
-
-    fn get_default_stylesheet() -> String {
-        return include_str!("../template/resume.css").to_string();
-    }
 }
 
 #[derive(Debug, Clone)]
 pub struct TCPResumeBuilder {
     stylesheet: String,
+    base_stylesheet: String,
     default_html_path: String,
 }
 
 impl TCPResumeBuilder {
     pub fn new() -> Self {
-        let stylesheet = Self::get_default_stylesheet();
+        let (stylesheet, base_stylesheet) = get_default_stylesheet();
         let default_html_path = "/tmp/resume.html".to_string();
         Self {
             stylesheet,
             default_html_path,
+            base_stylesheet,
         }
     }
 
@@ -156,7 +170,9 @@ impl TCPResumeBuilder {
         &self,
         markdown: String,
         title: &str,
+        stylesheet: Option<&String>,
     ) -> Result<String, Box<dyn std::error::Error>> {
+        let styles = stylesheet.unwrap_or(&self.stylesheet);
         let markdown = to_html_with_options(
             markdown.as_str(),
             &Options {
@@ -174,7 +190,7 @@ impl TCPResumeBuilder {
             .replace("{content}", &markdown)
             .replace(
                 "<!-- style -->",
-                &format!("<style>{}</style>", &self.stylesheet),
+                &format!("<style>{}{}</style>", &self.base_stylesheet, styles),
             )
             .replace("{title}", title);
 
@@ -192,9 +208,12 @@ impl TCPResumeBuilder {
         &self,
         markdown: String,
         title: String,
+        stylesheet: Option<&String>,
         pdf_options: PrintToPdfOptions,
     ) -> Vec<u8> {
-        let html_file = self.save_to_html(markdown, title.as_str()).unwrap();
+        let html_file = self
+            .save_to_html(markdown, title.as_str(), stylesheet)
+            .unwrap();
         let html_url = format!("file://{}", html_file);
 
         let options = LaunchOptionsBuilder::default()
@@ -242,7 +261,7 @@ impl TCPResumeBuilder {
         bytes
     }
 
-    fn get_default_stylesheet() -> String {
-        return include_str!("../template/resume.css").to_string();
+    pub fn default_stylesheet(&self) -> String {
+        return self.stylesheet.clone();
     }
 }

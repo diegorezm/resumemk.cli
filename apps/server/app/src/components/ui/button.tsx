@@ -34,7 +34,7 @@ export const Button: FC<ButtonProps> = ({
     outline:
       'border border-th-primary text-th-primary bg-transparent hover:bg-th-primary hover:text-th-background',
     ghost:
-      'bg-transparent text-th-primary hover:bg-th-muted hover:text-th-foreground',
+      'bg-transparent text-th-primary hover:bg-white/10 hover:text-th-foreground',
   };
 
   return (

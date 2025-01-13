@@ -6,7 +6,7 @@
   :root {
     --background: #f9f4e4;
     --foreground: #000000;
-    --red: #fff;
+    --red: red;
     --primary: #605f4b;
     --secondary: #9c9e80;
     --muted: #e0dbcd;
@@ -16,7 +16,7 @@
 }
 
 .input {
-  @apply px-4 py-2 mt-2 bg-transparent border text-th-foreground border-th-foreground rounded-md;
+  @apply w-full px-4 py-2 bg-transparent border text-th-foreground border-th-foreground rounded-md placeholder:text-th-muted;
 }
 
 /* https://uiverse.io/kennyotsu/short-warthog-33 */
@@ -24,7 +24,7 @@
   background-color: var(--foreground);
   background-image: radial-gradient(rgba(255, 255, 255, 0.171) 2px, transparent 0);
   background-size: 30px 30px;
-  background-position: -5px -5px
+  background-position: -5px -5px;
 }
 
 /* Toolbar styles */

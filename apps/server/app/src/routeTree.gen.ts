@@ -13,25 +13,32 @@ import { createFileRoute } from '@tanstack/react-router'
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as DocumentsIndexImport } from './routes/documents/index'
+import { Route as DocumentsDocumentIdImport } from './routes/documents/$documentId'
 
 // Create Virtual Routes
 
-const EditorLazyImport = createFileRoute('/editor')()
 const IndexLazyImport = createFileRoute('/')()
 
 // Create/Update Routes
-
-const EditorLazyRoute = EditorLazyImport.update({
-  id: '/editor',
-  path: '/editor',
-  getParentRoute: () => rootRoute,
-} as any).lazy(() => import('./routes/editor.lazy').then((d) => d.Route))
 
 const IndexLazyRoute = IndexLazyImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/index.lazy').then((d) => d.Route))
+
+const DocumentsIndexRoute = DocumentsIndexImport.update({
+  id: '/documents/',
+  path: '/documents/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const DocumentsDocumentIdRoute = DocumentsDocumentIdImport.update({
+  id: '/documents/$documentId',
+  path: '/documents/$documentId',
+  getParentRoute: () => rootRoute,
+} as any)
 
 // Populate the FileRoutesByPath interface
 
@@ -44,11 +51,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexLazyImport
       parentRoute: typeof rootRoute
     }
-    '/editor': {
-      id: '/editor'
-      path: '/editor'
-      fullPath: '/editor'
-      preLoaderRoute: typeof EditorLazyImport
+    '/documents/$documentId': {
+      id: '/documents/$documentId'
+      path: '/documents/$documentId'
+      fullPath: '/documents/$documentId'
+      preLoaderRoute: typeof DocumentsDocumentIdImport
+      parentRoute: typeof rootRoute
+    }
+    '/documents/': {
+      id: '/documents/'
+      path: '/documents'
+      fullPath: '/documents'
+      preLoaderRoute: typeof DocumentsIndexImport
       parentRoute: typeof rootRoute
     }
   }
@@ -58,37 +72,42 @@ declare module '@tanstack/react-router' {
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexLazyRoute
-  '/editor': typeof EditorLazyRoute
+  '/documents/$documentId': typeof DocumentsDocumentIdRoute
+  '/documents': typeof DocumentsIndexRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexLazyRoute
-  '/editor': typeof EditorLazyRoute
+  '/documents/$documentId': typeof DocumentsDocumentIdRoute
+  '/documents': typeof DocumentsIndexRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexLazyRoute
-  '/editor': typeof EditorLazyRoute
+  '/documents/$documentId': typeof DocumentsDocumentIdRoute
+  '/documents/': typeof DocumentsIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/editor'
+  fullPaths: '/' | '/documents/$documentId' | '/documents'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/editor'
-  id: '__root__' | '/' | '/editor'
+  to: '/' | '/documents/$documentId' | '/documents'
+  id: '__root__' | '/' | '/documents/$documentId' | '/documents/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexLazyRoute: typeof IndexLazyRoute
-  EditorLazyRoute: typeof EditorLazyRoute
+  DocumentsDocumentIdRoute: typeof DocumentsDocumentIdRoute
+  DocumentsIndexRoute: typeof DocumentsIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexLazyRoute: IndexLazyRoute,
-  EditorLazyRoute: EditorLazyRoute,
+  DocumentsDocumentIdRoute: DocumentsDocumentIdRoute,
+  DocumentsIndexRoute: DocumentsIndexRoute,
 }
 
 export const routeTree = rootRoute
@@ -102,14 +121,18 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/editor"
+        "/documents/$documentId",
+        "/documents/"
       ]
     },
     "/": {
       "filePath": "index.lazy.tsx"
     },
-    "/editor": {
-      "filePath": "editor.lazy.tsx"
+    "/documents/$documentId": {
+      "filePath": "documents/$documentId.tsx"
+    },
+    "/documents/": {
+      "filePath": "documents/index.tsx"
     }
   }
 }

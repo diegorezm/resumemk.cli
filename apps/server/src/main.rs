@@ -1,12 +1,10 @@
+use resume_builder::TCPResumeBuilder;
+use rust_embed::Embed;
 use std::{
     collections::HashMap,
     io::{BufRead, BufReader, Read, Write},
     net::{TcpListener, TcpStream},
 };
-
-use rust_embed::Embed;
-
-use resume_builder::TCPResumeBuilder;
 
 use std::env;
 
@@ -93,9 +91,15 @@ fn handle_connection(mut stream: TcpStream) {
 
             let title = request.get("title").unwrap();
             let content = request.get("content").unwrap();
+            let stylesheet = request.get("css");
             let pdf_options = headless_chrome::types::PrintToPdfOptions::default();
 
-            let pdf = resume_builder.to_pdf(content.to_string(), title.to_string(), pdf_options);
+            let pdf = resume_builder.to_pdf(
+                content.to_string(),
+                title.to_string(),
+                stylesheet,
+                pdf_options,
+            );
             let headers = format!(
                 "HTTP/1.1 200 OK\r\nContent-Type: application/pdf\r\nContent-Length: {}\r\n\r\n",
                 pdf.len()
@@ -112,13 +116,26 @@ fn handle_connection(mut stream: TcpStream) {
             stream.write_all(response.as_bytes()).unwrap();
             return;
         }
-    }
-
-    match serve_asset(path) {
-        Some(response) => stream.write_all(&response).unwrap(),
-        None => {
-            let response = "HTTP/1.1 404 NOT FOUND\r\n\r\n404 Not Found";
-            stream.write_all(response.as_bytes()).unwrap();
+    } else if method.eq(&"GET") {
+        if path.eq(&"/default/css") {
+            let resume_builder = TCPResumeBuilder::new();
+            let css = resume_builder.default_stylesheet();
+            let headers = format!(
+                "HTTP/1.1 200 OK\r\nContent-Type: text/css\r\nContent-Length: {}\r\n\r\n",
+                css.len()
+            );
+            let mut response = headers.into_bytes();
+            response.extend(css.into_bytes());
+            stream.write_all(&response).unwrap();
+            return;
+        } else {
+            match serve_asset(path) {
+                Some(response) => stream.write_all(&response).unwrap(),
+                None => {
+                    let response = "HTTP/1.1 404 NOT FOUND\r\n\r\n404 Not Found";
+                    stream.write_all(response.as_bytes()).unwrap();
+                }
+            }
         }
     }
 }
