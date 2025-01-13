@@ -19,7 +19,7 @@ export const Button: FC<ButtonProps> = ({
   ...props
 }) => {
   const baseStyles =
-    'inline-flex items-center gap-2 font-medium rounded-md transition duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2';
+    'inline-flex items-center gap-2 font-medium rounded-md transition duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-70';
 
   const sizeStyles: Record<ButtonSize, string> = {
     sm: 'px-3 py-1 text-sm',
