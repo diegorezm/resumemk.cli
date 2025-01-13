@@ -1,15 +1,15 @@
 # Resumemk
 
 Resumemk is a simple resume builder written in Rust.
-Keep you mind this project uses headless chrome to generate the pdf.
-So you need to have chrome/chromium installed on your machine.
+Keep in mind that this project uses headless Chrome to generate the PDF.
+So, you need to have Chrome/Chromium installed on your machine.
 
-## Self hosting
+## Self-hosting
 
-You can self host this project by using docker.
-steps:
+You can self-host this project by using Docker.
+Steps:
 
-1. Build the docker image
+1. Build the Docker image
 
 ```bash
 docker-compose up -d
@@ -19,37 +19,23 @@ docker-compose up -d
 
 ## Build
 
-This project comes with an http server that serves a basic markdown editor on your browser.
-If you don't want/need that, you can build the binary without the server feature.
-
-```bash
-cargo build --release --no-default-features
-```
-
-If you do want the server, you can run build normally.
-
-```bash
-cargo build --release
-```
-
-## Usage
+This project has a CLI and a server, which are separate apps, and you have to build them individually. 
+I recommend running the make commands.
 
 ### CLI
 
 ```bash
-resumemk build --help
+make install-cli
 ```
 
-### HTTP Server
+### Server
 
 ```bash
-resumemk serve
+make install-server
 ```
 
-Then open http://localhost:8080 in your browser.
+## Usage
 
-## TODO
-
-I think the biggest issue this app has is the binary size.
-Currently, it's around 12MB, and that's mostly because of the headless chrome library.
-I have to find a way to reduce the binary size, but I'm not sure how.
+```bash
+resumemk --help
+```
