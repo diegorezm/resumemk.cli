@@ -1,79 +1,108 @@
-import {ChevronLeft, Download, Pencil, Trash} from "@/components/icons"
-import {Button} from "@/components/ui/button"
-import {Dialog} from "@/components/ui/dialog"
-import {useResumeStore} from "@/store/use-resume-store"
-import {downloadMarkdown, downloadPDF} from "@/utils/request"
-import {Editor} from "@monaco-editor/react"
-import {Link, useNavigate} from "@tanstack/react-router"
-import {createFileRoute} from '@tanstack/react-router'
-import {parse} from "marked"
-import {FormEvent, useEffect, useState} from "react"
+"use client";
+import {ChevronLeft, Download, Pencil, Trash} from "@/components/icons";
+import {Button} from "@/components/ui/button";
+import {Dialog} from "@/components/ui/dialog";
+import {useResumeStore} from "@/store/use-resume-store";
+import {downloadMarkdown, downloadPDF} from "@/utils/request";
+import {Editor} from "@monaco-editor/react";
+import {parse} from "marked";
+import {FormEvent, Suspense, useEffect, useMemo, useState} from "react";
+import {redirect, useRouter, useSearchParams} from "next/navigation";
+import Link from "next/link";
+import {LoadingPage} from "@/components/loading-page";
 
-export const Route = createFileRoute('/documents/$documentId')({
-  component: RouteComponent,
-})
+export default function ResumePage() {
+  return (
+    <Suspense fallback={<LoadingPage />}>
+      <div className="mb-16">
+        <ResumePageContent />
+      </div>
+    </Suspense>
+  );
+}
 
-function RouteComponent() {
-  const {documentId} = Route.useParams()
-  const {resumes, setResumeContent, setResumeCss, removeResume, setResumeTitle} = useResumeStore()
-  const resume = resumes.find(e => e.id === documentId)
+function ResumePageContent() {
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id");
+  const {
+    resumes,
+    setResumeContent,
+    setResumeCss,
+    removeResume,
+    setResumeTitle,
+  } = useResumeStore();
 
-  const [activeTab, setActiveTab] = useState<'markdown' | 'css'>('markdown')
-  const [markdown, setMarkdown] = useState(resume ? resume.content : "")
-  const [formError, setFormError] = useState<string | null>(null)
-  const [styles, setStyles] = useState(resume ? resume.css : "")
-  const [openEditDialog, setOpenEditDialog] = useState(false)
-  const navigation = useNavigate()
+  const resume = useMemo(() => {
+    return resumes.find((e) => e.id === id);
+  }, [resumes, id]);
+
+  const [activeTab, setActiveTab] = useState<"markdown" | "css">("markdown");
+  const [markdown, setMarkdown] = useState(resume?.content ?? "");
+  const [styles, setStyles] = useState(resume?.css ?? "");
+  const [formError, setFormError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [openEditDialog, setOpenEditDialog] = useState(false);
+  const navigation = useRouter();
 
   const onEditSubmit = (e: FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
 
-    if (resume?.id === undefined) return
+    if (resume?.id === undefined) return;
 
-    const form = e.target as HTMLFormElement
-    const formData = new FormData(form)
-    const title = formData.get("title")?.toString() ?? ""
+    const form = e.target as HTMLFormElement;
+    const formData = new FormData(form);
+    const title = formData.get("title")?.toString() ?? "";
 
     if (title.length < 2) {
-      setFormError("The title has to have more than two characters.")
+      setFormError("The title has to have more than two characters.");
       return;
     }
 
     if (title.length > 12) {
-      setFormError("The title cannot have more than 12 characters.")
+      setFormError("The title cannot have more than 12 characters.");
       return;
     }
 
-    setResumeTitle(resume?.id, title)
-    setOpenEditDialog(false)
-    form.reset()
-  }
+    setResumeTitle(resume?.id, title);
+    setOpenEditDialog(false);
+    form.reset();
+  };
 
   const injectStyles = (styles: string) => {
-    const styleElement = document.createElement('style');
+    const styleElement = document.createElement("style");
     styleElement.innerHTML = styles;
-    styleElement.id = 'injected-styles'
+    styleElement.id = "injected-styles";
     document.head.appendChild(styleElement);
   };
 
   useEffect(() => {
     injectStyles(styles);
     return () => {
-      const styleElement = document.getElementById('injected-styles');
+      const styleElement = document.getElementById("injected-styles");
       if (styleElement) styleElement.remove();
-    }
+    };
   }, [styles]);
 
   useEffect(() => {
-    setResumeCss(resume ? resume.id : "", styles)
-    setResumeContent(resume ? resume.id : "", markdown)
-  }, [markdown, styles])
+    setResumeCss(resume ? resume.id : "", styles);
+    setResumeContent(resume ? resume.id : "", markdown);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [markdown, styles]);
+
+  useEffect(() => {
+    if (resume) {
+      setMarkdown(resume.content);
+      setStyles(resume.css);
+    }
+  }, [resume]);
+
+  if (!id) return redirect("/resumes");
 
   if (!resume) {
     return (
       <div className="flex flex-col items-center justify-center h-screen text-center">
         <h1 className="text-2xl font-bold text-th-red">Resume Not Found</h1>
-        <Link to="/documents">
+        <Link href="/resumes">
           <Button variant="outline" className="mt-4">
             Go Back
           </Button>
@@ -81,12 +110,13 @@ function RouteComponent() {
       </div>
     );
   }
+
   return (
     <>
       <div className="flex flex-col items-center justify-center p-2 gap-4">
         <header className="flex items-center justify-between w-full px-4 py-2 bg-th-primary text-th-background rounded-md">
           <div className="flex items-center gap-2">
-            <Link to="/documents">
+            <Link href="/resumes">
               <Button variant="ghost" size="sm" className="!text-th-background">
                 <ChevronLeft className="text-th-background" /> Go back
               </Button>
@@ -99,9 +129,7 @@ function RouteComponent() {
               size="icon"
               onClick={() => {
                 removeResume(resume);
-                navigation({
-                  to: "/documents"
-                })
+                navigation.push("/resumes");
               }}
             >
               <Trash className="text-th-background" size={20} />
@@ -110,7 +138,7 @@ function RouteComponent() {
               variant="ghost"
               size="icon"
               onClick={() => {
-                setOpenEditDialog(!openEditDialog)
+                setOpenEditDialog(!openEditDialog);
               }}
             >
               <Pencil className="text-th-background" size={20} />
@@ -145,6 +173,9 @@ function RouteComponent() {
                 value={markdown}
                 options={{
                   autoIndent: "brackets",
+                  minimap: {
+                    enabled: false,
+                  },
                 }}
               />
             )}
@@ -160,16 +191,39 @@ function RouteComponent() {
                 value={styles}
                 options={{
                   autoIndent: "brackets",
+                  minimap: {
+                    enabled: false,
+                  },
                 }}
               />
             )}
           </div>
           <div className="w-full h-full space-y-2">
             <nav className="flex justify-end w-full gap-2">
-              <Button variant={"ghost"} onClick={() => downloadMarkdown(resume)}>
+              <Button
+                variant={"ghost"}
+                disabled={loading}
+                onClick={() => {
+                  setLoading(true);
+                  downloadMarkdown(resume).finally(() => setLoading(false));
+                }}
+              >
                 <Download /> Markdown
               </Button>
-              <Button variant={"ghost"} onClick={() => downloadPDF(resume)}>
+              <Button
+                disabled={loading}
+                variant={"ghost"}
+                onClick={() => {
+                  setLoading(true);
+                  downloadPDF(resume)
+                    .then((e) => {
+                      if (e.error) {
+                        alert(e.error);
+                      }
+                    })
+                    .finally(() => setLoading(false));
+                }}
+              >
                 <Download /> PDF
               </Button>
             </nav>
@@ -184,8 +238,14 @@ function RouteComponent() {
           </div>
         </div>
       </div>
-      <Dialog open={openEditDialog} onOpenChange={() => setOpenEditDialog(!openEditDialog)}>
-        <form onSubmit={onEditSubmit} className="flex flex-col items-start w-full gap-2">
+      <Dialog
+        open={openEditDialog}
+        onOpenChange={() => setOpenEditDialog(!openEditDialog)}
+      >
+        <form
+          onSubmit={onEditSubmit}
+          className="flex flex-col items-start w-full gap-2"
+        >
           <label htmlFor="title">Title</label>
           <input
             type="text"
@@ -196,21 +256,19 @@ function RouteComponent() {
             defaultValue={resume.title}
             autoFocus
           />
-          {formError && (
-            <p className="text-sm text-th-red">{formError}</p>
-          )}
+          {formError && <p className="text-sm text-th-red">{formError}</p>}
           <div className="w-full py-2 mt-2 border-t space-x-4 border-t-th-muted">
-            <Button variant="ghost" type="button" onClick={() => setOpenEditDialog(false)}>
+            <Button
+              variant="ghost"
+              type="button"
+              onClick={() => setOpenEditDialog(false)}
+            >
               Cancel
             </Button>
-            <Button>
-              Submit
-            </Button>
+            <Button>Submit</Button>
           </div>
         </form>
       </Dialog>
     </>
   );
-
 }
-

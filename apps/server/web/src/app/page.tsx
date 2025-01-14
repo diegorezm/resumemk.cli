@@ -1,11 +1,7 @@
 import {Button} from "@/components/ui/button";
-import {createLazyFileRoute, Link} from "@tanstack/react-router";
+import Link from "next/link";
 
-export const Route = createLazyFileRoute("/")({
-  component: RouteComponent,
-});
-
-function RouteComponent() {
+export default function Home() {
   return (
     <div>
       <section className="flex flex-col items-center justify-center w-full h-screen px-4 dot-pattern text-th-background">
@@ -15,13 +11,14 @@ function RouteComponent() {
             <span className="text-th-primary">Markdown!</span>
           </h1>
           <p className="mb-8 text-lg text-th-secondary">
-            Use our intuitive web editor for a seamless online experience, or leverage our powerful CLI tool to work directly from your terminal
+            Use our intuitive web editor for a seamless online experience, or
+            leverage our powerful CLI tool to work directly from your terminal
           </p>
           <div className="flex flex-wrap justify-center gap-4">
-            <Link to="/documents">
+            <Link href="/resumes">
               <Button size="lg">Get Started</Button>
             </Link>
-            <a href="/#learn-more">
+            <Link href="/#learn-more">
               <Button
                 size="lg"
                 variant="outline"
@@ -29,14 +26,14 @@ function RouteComponent() {
               >
                 Learn More
               </Button>
-            </a>
+            </Link>
           </div>
         </div>
       </section>
 
       <section
         id="learn-more"
-        className="w-full h-screen px-6 py-16 bg-th-muted text-th-foreground"
+        className="w-full min-h-screen px-6 py-16 bg-th-muted text-th-foreground"
       >
         <div className="flex flex-col max-w-6xl mx-auto md:flex-row gap-12">
           {/* Text Content */}
@@ -51,10 +48,13 @@ function RouteComponent() {
               flexibility.
             </p>
             <div className="flex flex-wrap justify-center md:justify-start gap-4">
-              <Link to="/documents">
+              <Link href="/resumes">
                 <Button size="lg">Web Editor</Button>
               </Link>
-              <a href="https://github.com/diegorezm/resumemk#build" target="_blank">
+              <a
+                href="https://github.com/diegorezm/resumemk#build"
+                target="_blank"
+              >
                 <Button size="lg" variant="outline">
                   CLI Tool
                 </Button>
@@ -74,7 +74,6 @@ function RouteComponent() {
           </div>
         </div>
       </section>
-
     </div>
   );
 }

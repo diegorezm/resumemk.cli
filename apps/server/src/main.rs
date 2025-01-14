@@ -1,192 +1,137 @@
+mod assets;
+
+use std::collections::HashMap;
+use std::net::SocketAddr;
+
+use http_body_util::combinators::BoxBody;
+use http_body_util::{BodyExt, Collected, Empty, Full};
+use hyper::body::{Bytes, Frame};
+use hyper::header::HeaderValue;
+use hyper::server::conn::http1;
+use hyper::service::service_fn;
+use hyper::{Method, Request, Response, StatusCode};
+use hyper_util::rt::TokioIo;
 use resume_builder::TCPResumeBuilder;
-use rust_embed::Embed;
-use std::{
-    collections::HashMap,
-    io::{BufRead, BufReader, Read, Write},
-    net::{TcpListener, TcpStream},
-};
+use tokio::net::TcpListener;
 
-use std::env;
+async fn server(
+    req: Request<hyper::body::Incoming>,
+) -> Result<Response<BoxBody<Bytes, hyper::Error>>, hyper::Error> {
+    match (req.method(), req.uri().path()) {
+        (&Method::GET, path) => render_asset(path),
+        (&Method::POST, "/api/gen_pdf") => {
+            let pdf_bytes = req.into_body().map_frame(|frame| {
+                let frame = if let Ok(data) = frame.into_data() {
+                    let data_str = String::from_utf8_lossy(&data);
+                    match serde_json::from_str::<HashMap<String, String>>(&data_str) {
+                        Ok(map) => {
+                            let resume_builder = TCPResumeBuilder::new();
 
-#[derive(Embed)]
-#[folder = "app/dist"]
-struct Assets;
+                            let title = map.get("title").map(|value| value.as_str());
+                            let content = map.get("content").map(|value| value.as_str());
+                            let stylesheet = map.get("css").map(|value| value.as_str());
 
-pub fn init_server() {
-    let port = env::var("PORT").unwrap_or_else(|_| "10000".to_string());
-    let addr = format!("0.0.0.0:{}", port);
-    let tcp_listener = TcpListener::bind(&addr).unwrap();
-    println!("Listening on {}", addr);
-    for stream in tcp_listener.incoming() {
-        match stream {
-            Ok(stream) => {
-                handle_connection(stream);
-            }
-            Err(e) => {
-                eprintln!("Error: {}", e);
-            }
-        }
-    }
-}
+                            if title.is_none() || content.is_none() {
+                                return Frame::data(Bytes::new());
+                            }
 
-fn handle_connection(mut stream: TcpStream) {
-    let mut buf_reader = BufReader::new(&stream);
-    let mut content_length = 0;
-    let mut request = String::new();
-    let mut headers: HashMap<String, String> = HashMap::new();
-    let mut body = String::new();
+                            let pdf_options = headless_chrome::types::PrintToPdfOptions::default();
 
-    for line in buf_reader.by_ref().lines() {
-        match line {
-            Ok(line) => {
-                if line.is_empty() {
-                    // End of headers.
-                    break;
-                } else if line.starts_with("GET")
-                    || line.starts_with("POST")
-                    || line.starts_with("PUT")
-                    || line.starts_with("DELETE")
-                {
-                    request = line;
+                            let pdf = resume_builder.to_pdf(
+                                content.unwrap(),
+                                title.unwrap(),
+                                stylesheet,
+                                pdf_options,
+                            );
+
+                            Bytes::from(pdf)
+                        }
+                        Err(err) => {
+                            eprintln!("Error deserializing data: {:?}", err);
+                            Bytes::new()
+                        }
+                    }
                 } else {
-                    // Parse headers.
-                    if line.starts_with("Content-Length: ") {
-                        content_length = line
-                            .split("Content-Length: ")
-                            .nth(1)
-                            .and_then(|s| s.parse::<usize>().ok())
-                            .unwrap_or(0);
-                    }
+                    Bytes::new()
+                };
+                Frame::data(frame)
+            });
+            let pdf = pdf_bytes
+                .boxed()
+                .collect()
+                .await
+                .unwrap_or(Collected::default())
+                .to_bytes();
 
-                    let mut parts = line.splitn(2, ": ");
-                    if let (Some(key), Some(value)) = (parts.next(), parts.next()) {
-                        headers.insert(key.trim().to_lowercase(), value.trim().to_string());
-                    } else {
-                        eprintln!("Malformed header: {}", line);
-                    }
-                }
+            if pdf.len() == 0 {
+                let mut error = Response::new(empty());
+                *error.status_mut() = StatusCode::INTERNAL_SERVER_ERROR;
+                return Ok(error);
             }
-            Err(e) => {
-                eprintln!("Error while reading request line: {}", e);
-            }
+
+            let pdf_len = pdf.len().to_string();
+            let mut response = Response::new(full(pdf));
+            response
+                .headers_mut()
+                .append("Content-Type", HeaderValue::from_static("application/pdf"));
+            response
+                .headers_mut()
+                .append("Content-Length", HeaderValue::from_str(&pdf_len).unwrap());
+            Ok(response)
         }
+        _ => render_asset("404"),
     }
+}
 
-    if content_length > 0 {
-        buf_reader
-            .take(content_length as u64)
-            .read_to_string(&mut body)
-            .expect("Failed to read request body");
-    }
-
-    // Extract the requested path.
-    let request_parts: Vec<&str> = request.split_whitespace().collect();
-    let method = request_parts.get(0).unwrap_or(&"GET");
-    let path = request_parts.get(1).unwrap_or(&"/");
-
-    if method.eq(&"POST") {
-        if path.eq(&"/get_pdf") {
-            let request: HashMap<String, String> = serde_json::from_str(&body).unwrap();
-            let resume_builder = TCPResumeBuilder::new();
-
-            let title = request.get("title").unwrap();
-            let content = request.get("content").unwrap();
-            let stylesheet = request.get("css");
-            let pdf_options = headless_chrome::types::PrintToPdfOptions::default();
-
-            let pdf = resume_builder.to_pdf(
-                content.to_string(),
-                title.to_string(),
-                stylesheet,
-                pdf_options,
+fn render_asset(path: &str) -> Result<Response<BoxBody<Bytes, hyper::Error>>, hyper::Error> {
+    let asset = assets::serve_asset(path);
+    match asset {
+        Ok((data, mime_type)) => {
+            let mut response = Response::new(full(data));
+            response.headers_mut().append(
+                "Content-Type",
+                HeaderValue::from_str(mime_type.as_str()).unwrap(),
             );
-            let headers = format!(
-                "HTTP/1.1 200 OK\r\nContent-Type: application/pdf\r\nContent-Length: {}\r\n\r\n",
-                pdf.len()
-            );
-
-            let mut response = headers.into_bytes();
-            response.extend(pdf);
-
-            stream.write_all(&response).unwrap();
-            stream.flush().unwrap();
-            return;
-        } else {
-            let response = "HTTP/1.1 404 NOT FOUND\r\n\r\n404 Not Found";
-            stream.write_all(response.as_bytes()).unwrap();
-            return;
+            Ok(response)
         }
-    } else if method.eq(&"GET") {
-        if path.eq(&"/default/css") {
-            let resume_builder = TCPResumeBuilder::new();
-            let css = resume_builder.default_stylesheet();
-            let headers = format!(
-                "HTTP/1.1 200 OK\r\nContent-Type: text/css\r\nContent-Length: {}\r\n\r\n",
-                css.len()
-            );
-            let mut response = headers.into_bytes();
-            response.extend(css.into_bytes());
-            stream.write_all(&response).unwrap();
-            return;
-        } else {
-            match serve_asset(path) {
-                Some(response) => stream.write_all(&response).unwrap(),
-                None => {
-                    let response = "HTTP/1.1 404 NOT FOUND\r\n\r\n404 Not Found";
-                    stream.write_all(response.as_bytes()).unwrap();
-                }
-            }
+        Err(_err) => {
+            let mut not_found = Response::new(empty());
+            *not_found.status_mut() = StatusCode::NOT_FOUND;
+            Ok(not_found)
         }
     }
 }
 
-fn serve_asset(path: &str) -> Option<Vec<u8>> {
-    // Remove the leading `/` if present.
-    let normalized_path = if path == "/" {
-        "index.html"
-    } else {
-        &path[1..]
-    };
-
-    // Fetch the asset from embedded assets.
-    if let Some(asset) = Assets::get(normalized_path) {
-        let mime_type = infer_mime_type(normalized_path);
-
-        // Create the HTTP response header.
-        let response_header = format!(
-            "HTTP/1.1 200 OK\r\nContent-Type: {}\r\nContent-Length: {}\r\n\r\n",
-            mime_type,
-            asset.data.len()
-        );
-
-        // Combine the header and the body into a single response.
-        let mut response = response_header.into_bytes();
-        response.extend_from_slice(&asset.data);
-
-        Some(response)
-    } else {
-        None // Asset not found.
-    }
+fn empty() -> BoxBody<Bytes, hyper::Error> {
+    Empty::<Bytes>::new()
+        .map_err(|never| match never {})
+        .boxed()
+}
+fn full<T: Into<Bytes>>(chunk: T) -> BoxBody<Bytes, hyper::Error> {
+    Full::new(chunk.into())
+        .map_err(|never| match never {})
+        .boxed()
 }
 
-fn infer_mime_type(path: &str) -> &str {
-    if path.ends_with(".html") {
-        "text/html"
-    } else if path.ends_with(".css") {
-        "text/css"
-    } else if path.ends_with(".js") {
-        "application/javascript"
-    } else if path.ends_with(".png") {
-        "image/png"
-    } else if path.ends_with(".jpg") || path.ends_with(".jpeg") {
-        "image/jpeg"
-    } else if path.ends_with(".gif") {
-        "image/gif"
-    } else {
-        "application/octet-stream"
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+    let port: u16 = std::env::var("PORT")
+        .unwrap_or_else(|_| "10000".to_string())
+        .parse()
+        .unwrap_or(1000);
+    let addr = SocketAddr::from(([0, 0, 0, 0], port));
+    let listener = TcpListener::bind(addr).await?;
+    println!("Listening on: http://localhost:{port}");
+    loop {
+        let (stream, _) = listener.accept().await?;
+        let io = TokioIo::new(stream);
+        tokio::task::spawn(async move {
+            if let Err(err) = http1::Builder::new()
+                .serve_connection(io, service_fn(server))
+                .await
+            {
+                eprintln!("Error serving connection: {:?}", err);
+            }
+        });
     }
-}
-
-fn main() {
-    init_server();
 }

@@ -2,10 +2,9 @@ services:
   resumemk:
     build: .
     ports:
-      - "4747:4747"
+      - "10000:10000"
     environment:
       - RUST_LOG=info
-      - PORT=4747
     deploy:
       resources:
         limits:

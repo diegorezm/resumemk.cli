@@ -168,13 +168,13 @@ impl TCPResumeBuilder {
 
     fn save_to_html(
         &self,
-        markdown: String,
+        markdown: &str,
         title: &str,
-        stylesheet: Option<&String>,
+        stylesheet: Option<&str>,
     ) -> Result<String, Box<dyn std::error::Error>> {
         let styles = stylesheet.unwrap_or(&self.stylesheet);
         let markdown = to_html_with_options(
-            markdown.as_str(),
+            markdown,
             &Options {
                 compile: CompileOptions {
                     allow_dangerous_html: true,
@@ -206,14 +206,12 @@ impl TCPResumeBuilder {
 
     pub fn to_pdf(
         &self,
-        markdown: String,
-        title: String,
-        stylesheet: Option<&String>,
+        markdown: &str,
+        title: &str,
+        stylesheet: Option<&str>,
         pdf_options: PrintToPdfOptions,
     ) -> Vec<u8> {
-        let html_file = self
-            .save_to_html(markdown, title.as_str(), stylesheet)
-            .unwrap();
+        let html_file = self.save_to_html(markdown, title, stylesheet).unwrap();
         let html_url = format!("file://{}", html_file);
 
         let options = LaunchOptionsBuilder::default()
