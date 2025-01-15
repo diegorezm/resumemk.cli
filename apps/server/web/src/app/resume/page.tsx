@@ -82,7 +82,7 @@ function ResumePageContent() {
 
   return (
     <>
-      <div className="flex flex-col items-center justify-center p-2 gap-4">
+      <div className="flex flex-col items-center justify-center p-2 gap-6">
         <Header
           openEditDialog={openEditDialog}
           setOpenEditDialog={setOpenEditDialog}
@@ -91,6 +91,7 @@ function ResumePageContent() {
         <div className="flex w-full h-[90vh] gap-2">
           <div
             className={cn(
+              "transition-all delay-150",
               showPreview && "hidden md:block md:w-1/2 h-full",
               !showPreview && "block w-full h-full",
             )}
@@ -104,6 +105,7 @@ function ResumePageContent() {
           </div>
           <div
             className={cn(
+              "transition-all delay-150",
               showPreview && "block w-full h-full md:w-1/2",
               !showPreview && "hidden",
             )}

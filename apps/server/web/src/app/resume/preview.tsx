@@ -13,7 +13,7 @@ export const Preview = ({ resume }: Props) => {
   const [loading, setLoading] = useState(false);
   return (
     <div className="w-full h-full space-y-2">
-      <nav className="flex justify-end w-full gap-2">
+      <nav className="flex justify-start md:justify-end w-full gap-2">
         <Button
           variant="ghost"
           disabled={loading}
