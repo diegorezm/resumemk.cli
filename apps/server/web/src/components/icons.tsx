@@ -4,7 +4,7 @@ type Props = {
   className?: string;
 };
 
-export function Plus({size = 24, color = "currentColor", className}: Props) {
+export function Plus({ size = 24, color = "currentColor", className }: Props) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -24,7 +24,11 @@ export function Plus({size = 24, color = "currentColor", className}: Props) {
   );
 }
 
-export function Download({size = 24, color = "currentColor", className}: Props) {
+export function Download({
+  size = 24,
+  color = "currentColor",
+  className,
+}: Props) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -45,8 +49,11 @@ export function Download({size = 24, color = "currentColor", className}: Props) 
   );
 }
 
-
-export function ChevronLeft({size = 24, color = "currentColor", className}: Props) {
+export function ChevronLeft({
+  size = 24,
+  color = "currentColor",
+  className,
+}: Props) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -62,10 +69,56 @@ export function ChevronLeft({size = 24, color = "currentColor", className}: Prop
     >
       <path d="m15 18-6-6 6-6" />
     </svg>
-  )
+  );
 }
 
-export function Trash({size = 24, color = "currentColor", className}: Props) {
+export function ChevronUp({
+  size = 24,
+  color = "currentColor",
+  className,
+}: Props) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke={color}
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+    >
+      <path d="m18 15-6-6-6 6" />
+    </svg>
+  );
+}
+
+export function ChevronDown({
+  size = 24,
+  color = "currentColor",
+  className,
+}: Props) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke={color}
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+    >
+      <path d="m6 9 6 6 6-6" />
+    </svg>
+  );
+}
+
+export function Trash({ size = 24, color = "currentColor", className }: Props) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -86,7 +139,11 @@ export function Trash({size = 24, color = "currentColor", className}: Props) {
   );
 }
 
-export function Pencil({size = 24, color = "currentColor", className}: Props) {
+export function Pencil({
+  size = 24,
+  color = "currentColor",
+  className,
+}: Props) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -106,8 +163,11 @@ export function Pencil({size = 24, color = "currentColor", className}: Props) {
   );
 }
 
-
-export function Loader({size = 24, color = "currentColor", className}: Props) {
+export function Loader({
+  size = 24,
+  color = "currentColor",
+  className,
+}: Props) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -119,7 +179,7 @@ export function Loader({size = 24, color = "currentColor", className}: Props) {
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
-      className={`lucide lucide-loader ${className ? className : ''}`}
+      className={`lucide lucide-loader ${className ? className : ""}`}
     >
       <path d="M12 2v4" />
       <path d="m16.2 7.8 2.9-2.9" />
@@ -133,10 +193,10 @@ export function Loader({size = 24, color = "currentColor", className}: Props) {
   );
 }
 
-
-export function Eye({size = 24, color = "currentColor", className}: Props) {
+export function Eye({ size = 24, color = "currentColor", className }: Props) {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg"
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
       width={size}
       height={size}
       viewBox="0 0 24 24"
@@ -145,10 +205,31 @@ export function Eye({size = 24, color = "currentColor", className}: Props) {
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
-      className={`lucide lucide-eye ${className}`}>
+      className={`lucide lucide-eye ${className}`}
+    >
       <path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0" />
       <circle cx="12" cy="12" r="3" />
+    </svg>
+  );
+}
 
+export function Menu({ size = 24, color = "currentColor", className }: Props) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke={color}
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={`lucide lucide-eye ${className}`}
+    >
+      <line x1="4" x2="20" y1="12" y2="12" />
+      <line x1="4" x2="20" y1="6" y2="6" />
+      <line x1="4" x2="20" y1="18" y2="18" />
     </svg>
   );
 }

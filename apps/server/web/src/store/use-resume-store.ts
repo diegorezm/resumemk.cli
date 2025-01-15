@@ -2,7 +2,7 @@ import { Resume } from "@/types";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-interface ResumeStore {
+interface IResumeStore {
   resumes: Resume[];
   addResume: (resume: Resume) => void;
   removeResume: (resume: Resume) => void;
@@ -11,7 +11,7 @@ interface ResumeStore {
   setResumeCss: (resumeId: string, css: string) => void;
 }
 
-export const useResumeStore = create<ResumeStore>()(
+export const useResumeStore = create<IResumeStore>()(
   persist(
     (set) => ({
       resumes: [],
