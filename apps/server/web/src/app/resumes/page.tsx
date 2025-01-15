@@ -1,23 +1,25 @@
 "use client";
-import { Download, Eye, Plus, Trash } from "@/components/icons";
-import { Button } from "@/components/ui/button";
-import { Dialog } from "@/components/ui/dialog";
-import { DEFAULT_RESUME, DEFAULT_STYLES } from "@/constants/default";
-import { useResumeStore } from "@/store/use-resume-store";
-import { Resume } from "@/types";
-import { downloadPDF } from "@/utils/request";
-import { parse } from "marked";
+import {Download, Eye, Plus, Trash} from "@/components/icons";
+import {Button} from "@/components/ui/button";
+import {Dialog} from "@/components/ui/dialog";
+import {DEFAULT_RESUME, DEFAULT_STYLES} from "@/constants/default";
+import {useCreateQueryString} from "@/hooks/use-create-query-string";
+import {useResumeStore} from "@/store/use-resume-store";
+import {Resume} from "@/types";
+import {downloadPDF} from "@/utils/request";
+import {parse} from "marked";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import {useRouter} from "next/navigation";
+import {useState} from "react";
 
 const genRandomId = () => {
   return Date.now().toString(36) + Math.random().toString(36).substring(2);
 };
 
-const ResumeCard = ({ resume }: { resume: Resume }) => {
-  const { removeResume } = useResumeStore();
+const ResumeCard = ({resume}: {resume: Resume}) => {
+  const {removeResume} = useResumeStore();
   const [loading, setLoading] = useState(false);
+  const {createQueryString} = useCreateQueryString()
 
   return (
     <div className="overflow-hidden shadow-md rounded-md">
@@ -48,7 +50,9 @@ const ResumeCard = ({ resume }: { resume: Resume }) => {
           >
             <Download className="text-th-background" />
           </Button>
-          <Link href={`/resume?id=${resume.id}`}>
+          <Link href={
+            'resume' + '?' + createQueryString('id', resume.id)
+          }>
             <Button variant="ghost" size="icon">
               <Eye className="text-th-background" />
             </Button>
@@ -66,7 +70,7 @@ const ResumeCard = ({ resume }: { resume: Resume }) => {
 };
 
 export default function ResumesPage() {
-  const { resumes, addResume } = useResumeStore();
+  const {resumes, addResume} = useResumeStore();
   const [formError, setFormError] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
   const navigation = useRouter();
