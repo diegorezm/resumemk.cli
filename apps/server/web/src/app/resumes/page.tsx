@@ -20,6 +20,7 @@ const ResumeCard = ({resume}: {resume: Resume}) => {
   const {removeResume} = useResumeStore();
   const [loading, setLoading] = useState(false);
   const {createQueryString} = useCreateQueryString()
+  const navigation = useRouter()
 
   return (
     <div className="overflow-hidden shadow-md rounded-md">
@@ -50,13 +51,12 @@ const ResumeCard = ({resume}: {resume: Resume}) => {
           >
             <Download className="text-th-background" />
           </Button>
-          <Link href={
-            'resume' + '?' + createQueryString('id', resume.id)
-          }>
-            <Button variant="ghost" size="icon">
-              <Eye className="text-th-background" />
-            </Button>
-          </Link>
+          <Button variant="ghost" size="icon" onClick={() => {
+            navigation.push('resume' + '?' + createQueryString('id', resume.id))
+
+          }}>
+            <Eye className="text-th-background" />
+          </Button>
         </div>
       </div>
       <div
