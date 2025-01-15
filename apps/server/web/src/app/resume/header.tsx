@@ -58,7 +58,7 @@ const MobileHeader = ({ openEditDialog, resume, setOpenEditDialog }: Props) => {
 
       {/* Dropdown Menu */}
       {menuOpen && (
-        <div className="absolute top-12 left-4 right-4 bg-th-primary shadow-lg rounded-md p-4 z-10">
+        <div className="absolute top-12 left-4 right-4 bg-th-primary shadow-lg rounded-md p-4 z-10 w-[200px]">
           <Button
             variant="ghost"
             size="sm"
@@ -78,7 +78,7 @@ const MobileHeader = ({ openEditDialog, resume, setOpenEditDialog }: Props) => {
               navigation.push("/resumes");
               setMenuOpen(false);
             }}
-            className="w-full justify-start text-red-500"
+            className="w-full justify-start !text-th-background"
           >
             <Trash className="mr-2" size={20} /> Delete
           </Button>
