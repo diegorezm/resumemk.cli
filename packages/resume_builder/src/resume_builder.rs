@@ -6,11 +6,9 @@ use headless_chrome::types::PrintToPdfOptions;
 use headless_chrome::{Browser, LaunchOptions, LaunchOptionsBuilder};
 use markdown::{to_html_with_options, CompileOptions, Options};
 
-fn get_default_stylesheet() -> (String, String) {
-    let stylesheet = include_str!("../template/resume.css").to_string();
-    let base_stylesheet = include_str!("../template/base.css").to_string();
-    return (stylesheet, base_stylesheet);
-}
+const HTML_TEMPLATE: &str = include_str!("../template/resume.html");
+const DEFAULT_STYLES: &str = include_str!("../template/resume.css");
+const BASE_STYLES: &str = include_str!("../template/base.css");
 
 #[derive(Debug, Clone)]
 pub struct CLIResumeBuilder {
@@ -20,10 +18,9 @@ pub struct CLIResumeBuilder {
 
 impl CLIResumeBuilder {
     pub fn new() -> Self {
-        let (stylesheet, base_stylesheet) = get_default_stylesheet();
         Self {
-            stylesheet,
-            base_stylesheet,
+            stylesheet: DEFAULT_STYLES.to_string(),
+            base_stylesheet: BASE_STYLES.to_string(),
         }
     }
 
@@ -50,8 +47,7 @@ impl CLIResumeBuilder {
         )
         .map_err(|e| e.to_string())?;
 
-        let html_raw = include_str!("../template/resume.html");
-        let html = html_raw
+        let html = HTML_TEMPLATE
             .replace("{content}", &markdown)
             .replace(
                 "<!-- style -->",
@@ -108,8 +104,7 @@ impl CLIResumeBuilder {
     ) -> Result<String, Box<dyn std::error::Error>> {
         let input_file_contents = std::fs::read_to_string(input)?;
         let markdown = markdown::to_html(input_file_contents.as_str());
-        let html_raw = include_str!("../template/resume.html");
-        let html = html_raw
+        let html = HTML_TEMPLATE
             .replace("{content}", &markdown)
             .replace(
                 "<!-- style -->",
@@ -157,12 +152,11 @@ pub struct TCPResumeBuilder {
 
 impl TCPResumeBuilder {
     pub fn new() -> Self {
-        let (stylesheet, base_stylesheet) = get_default_stylesheet();
         let default_html_path = "/tmp/resume.html".to_string();
         Self {
-            stylesheet,
+            stylesheet: DEFAULT_STYLES.to_string(),
+            base_stylesheet: BASE_STYLES.to_string(),
             default_html_path,
-            base_stylesheet,
         }
     }
 
@@ -184,9 +178,7 @@ impl TCPResumeBuilder {
             },
         )
         .map_err(|e| e.to_string())?;
-
-        let html_raw = include_str!("../template/resume.html");
-        let html = html_raw
+        let html = HTML_TEMPLATE
             .replace("{content}", &markdown)
             .replace(
                 "<!-- style -->",
