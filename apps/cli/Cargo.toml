@@ -7,3 +7,7 @@ edition = "2021"
 clap = { version = "4.5.22", features = ["derive"] }
 headless_chrome = "1.0.15"
 resume_builder = {path = "../../packages/resume_builder"}
+
+[[bin]]
+name = "resumemk_cli"
+path = "src/main.rs"

@@ -1030,22 +1030,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "resumemk"
-version = "2.0.0"
-dependencies = [
- "clap",
- "failure",
- "headless_chrome",
- "http-body-util",
- "hyper",
- "hyper-util",
- "markdown",
- "rust-embed",
- "serde_json",
- "tokio",
-]
-
-[[package]]
 name = "resumemk_cli"
 version = "0.1.0"
 dependencies = [
