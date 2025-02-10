@@ -143,6 +143,15 @@ impl CLIResumeBuilder {
     }
 }
 
+impl Default for CLIResumeBuilder {
+    fn default() -> Self {
+        Self {
+            stylesheet: DEFAULT_STYLES.to_string(),
+            base_stylesheet: BASE_STYLES.to_string(),
+        }
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct TCPResumeBuilder {
     stylesheet: String,
@@ -252,6 +261,6 @@ impl TCPResumeBuilder {
     }
 
     pub fn default_stylesheet(&self) -> String {
-        return self.stylesheet.clone();
+        self.stylesheet.clone()
     }
 }
