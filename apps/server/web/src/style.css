@@ -40,10 +40,59 @@
   --color-on-error: var(--on-error);
 }
 
+@layer components {
+  .btn {
+    @apply inline-flex items-center w-full justify-center rounded-lg hover:cursor-pointer transition-colors duration-200 gap-2 font-bold;
+  }
+
+  .btn-primary {
+    @apply bg-primary text-on-primary hover:bg-primary/90;
+  }
+
+  .btn-secondary {
+    @apply bg-secondary text-on-secondary hover:bg-secondary/90;
+  }
+
+  .btn-tertiary {
+    @apply bg-tertiary text-on-tertiary hover:bg-tertiary/90;
+  }
+
+  .btn-outline {
+    @apply bg-transparent border border-primary hover:bg-primary hover:text-on-primary;
+  }
+
+  .btn-sm {
+    @apply px-3 py-1 text-sm;
+  }
+
+  .btn-md {
+    @apply px-4 py-2 text-base;
+  }
+
+  .btn-lg {
+    @apply px-6 py-3 text-lg;
+  }
+
+  .input {
+    @apply rounded-md bg-surface text-on-surface border border-foreground/20 px-4 py-2;
+  }
+}
+
+/* https://uiverse.io/kennyotsu/short-warthog-33 */
+.dot-pattern {
+  background-color: var(--foreground);
+  background-image: radial-gradient(
+    rgba(255, 255, 255, 0.171) 2px,
+    transparent 0
+  );
+  background-size: 30px 30px;
+  background-position: -5px -5px;
+}
+
 html,
 body {
   font-family:
-    "Titillium Web",
+    "Inter",
     system-ui,
     -apple-system,
     BlinkMacSystemFont,
