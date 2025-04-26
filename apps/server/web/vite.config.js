@@ -8,7 +8,9 @@ const commonMetadata = `
   <meta name="description" content="Your website description goes here.">
   <meta name="keywords" content="your, keywords, go, here">
   <link href="/style.css" rel="stylesheet" />
-  <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
 `;
 
 /**
@@ -32,7 +34,7 @@ export default defineConfig({
     cssMinify: true,
     minify: true,
     rollupOptions: {
-      input: sync("./src/**/*.html".replace(/\\/g, "/")),
+      input: sync("./src/**/*.[html,js,png,svg,ico]".replace(/\\/g, "/")),
     },
   },
   plugins: [tailwindcss(), transformHtmlPlugin({ metadata: commonMetadata })],
