@@ -4,5 +4,13 @@
     <%= metadata %>
     <title>Resumemk | Resume</title>
   </head>
-  <body></body>
+  <body>
+    <script>
+      const urlParams = new URLSearchParams(window.location.search);
+      const id = urlParams.get("id");
+      if (!id) {
+        window.location.href = "/dashboard.html";
+      }
+    </script>
+  </body>
 </html>
