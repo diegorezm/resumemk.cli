@@ -57,6 +57,10 @@
     @apply bg-tertiary text-on-tertiary hover:bg-tertiary/90;
   }
 
+  .btn-ghost {
+    @apply hover:bg-surface/90 text-foreground;
+  }
+
   .btn-outline {
     @apply bg-transparent border border-primary hover:bg-primary hover:text-on-primary;
   }
@@ -74,7 +78,7 @@
   }
 
   .input {
-    @apply rounded-md bg-surface text-on-surface border border-foreground/20 px-4 py-2;
+    @apply rounded-md bg-transparent text-on-surface border border-foreground/20 px-4 py-2 focus:outline-none focus:border-foreground;
   }
 }
 
