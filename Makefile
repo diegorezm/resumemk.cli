@@ -1,7 +1,7 @@
 USER_HOME := $(shell echo ~)
 
 build-client:
-	cd apps/server/web && pnpm i && pnpm run build
+	cd apps/server/web && bun i && bun run build
 
 build-server: build-client
 	cargo build -p resumemk_server --release
