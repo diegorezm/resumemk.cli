@@ -4,12 +4,224 @@
     <%= metadata %>
     <title>Resumemk | Resume</title>
   </head>
-  <body>
-    <script>
+  <body class="max-w-[1980px] mx-auto">
+    <div class="px-6 flex flex-col h-screen mx-auto">
+      <header class="flex justify-between items-center p-4">
+        <div class="resume-title-group flex items-center gap-4">
+          <h1
+            id="resume_title"
+            class="text-xl font-semibold text-foreground"
+          ></h1>
+          <div class="button-group flex gap-2">
+            <button id="edit_button" class="btn btn-sm btn-primary">
+              Edit
+            </button>
+            <button id="delete_button" class="btn btn-sm btn-destructive">
+              Delete
+            </button>
+          </div>
+        </div>
+        <div>
+          <button id="toggle_preview_button" class="btn btn-sm btn-secondary">
+            Toggle Preview
+          </button>
+        </div>
+      </header>
+
+      <main class="main-content flex flex-grow overflow-hidden">
+        <!-- editors  -->
+        <section
+          id="editor-container"
+          class="w-1/2 transition-all duration-150"
+        >
+          <div class="flex gap-2">
+            <div>
+              <button
+                class="tab tab-active"
+                data-editor="markdown"
+                id="markdown-editor-tab"
+              >
+                Markdown Editor
+              </button>
+            </div>
+            <div>
+              <button
+                class="tab tab-inactive"
+                data-editor="css"
+                id="css-editor-tab"
+              >
+                CSS Editor
+              </button>
+            </div>
+          </div>
+
+          <div class="h-full border-3 border-secondary">
+            <div id="markdown-editor-wrapper" class="h-full"></div>
+            <div id="css-editor-wrapper" class="hidden h-full"></div>
+          </div>
+        </section>
+        <!-- preview -->
+        <section
+          class="w-1/2 transition-all duration-150 rounded-t-lg"
+          id="preview_container"
+        >
+          <div class="flex gap-2 w-full justify-end">
+            <button class="btn btn-ghost btn-sm !w-fit">MARKDOWN</button>
+            <button class="btn btn-ghost btn-sm !w-fit">PDF</button>
+          </div>
+          <div class="resume h-full overflow-y-auto" id="resume_content"></div>
+        </section>
+      </main>
+    </div>
+    <script src="/resume_store.js"></script>
+    <script type="module">
+      import { marked } from "marked";
+      import * as monaco from "monaco-editor";
+
+      fetch("/solarized_light.json")
+        .then((data) => data.json())
+        .then((data) => {
+          monaco.editor.defineTheme("solarized-light", data);
+          monaco.editor.setTheme("solarized-light");
+        });
+
+      const resumeTitleElement = document.getElementById("resume_title");
+      const editButton = document.getElementById("edit_button");
+      const deleteButton = document.getElementById("delete_button");
+      const togglePreviewButton = document.getElementById(
+        "toggle_preview_button",
+      );
+      const editorContainer = document.getElementById("editor-container");
+      const previewContainer = document.getElementById("preview_container");
+      const resumeContent = document.getElementById("resume_content");
       const urlParams = new URLSearchParams(window.location.search);
       const id = urlParams.get("id");
+
+      const markdownEditorTab = document.getElementById("markdown-editor-tab");
+      const cssEditorTab = document.getElementById("css-editor-tab");
+      const markdownEditorWrapper = document.getElementById(
+        "markdown-editor-wrapper",
+      );
+      const cssEditorWrapper = document.getElementById("css-editor-wrapper");
+
       if (!id) {
         window.location.href = "/dashboard.html";
+      }
+
+      let resume = getResume(id);
+      resumeTitleElement.textContent = resume.title;
+
+      let markdownEditor, cssEditor;
+      let activeEditor = "markdown";
+
+      // Function to update preview
+
+      // Initialize Markdown Editor
+      markdownEditor = monaco.editor.create(markdownEditorWrapper, {
+        value: resume.content,
+        language: "markdown",
+        theme: "solarized-light",
+        automaticLayout: true,
+        minimap: {
+          enabled: false,
+        },
+      });
+
+      // Initialize CSS Editor
+      cssEditor = monaco.editor.create(cssEditorWrapper, {
+        value: resume.css,
+        language: "css",
+        theme: "solarized-light",
+        automaticLayout: true,
+        minimap: {
+          enabled: false,
+        },
+      });
+
+      cssEditorWrapper.classList.add("hidden");
+      updatePreview(resume.content);
+      injectResumeStyles(resume.css);
+
+      markdownEditor.onDidChangeModelContent((event) => {
+        const newContent = markdownEditor.getValue();
+        resume.content = newContent;
+        saveResume(resume);
+        updatePreview(newContent);
+        injectResumeStyles(resume.css);
+      });
+
+      // Event listener for CSS editor changes
+      cssEditor.onDidChangeModelContent((event) => {
+        const newCss = cssEditor.getValue();
+        resume.css = newCss;
+        saveResume(resume);
+        injectResumeStyles(newCss);
+      });
+
+      // Event Listeners for switching editors
+      markdownEditorTab.addEventListener("click", () => {
+        activeEditor = "markdown";
+
+        markdownEditorTab.classList.remove("tab-inactive");
+        cssEditorTab.classList.remove("tab-active");
+
+        markdownEditorTab.classList.add("tab-active");
+        cssEditorTab.classList.add("tab-inactive");
+
+        markdownEditorWrapper.classList.remove("hidden");
+        cssEditorWrapper.classList.add("hidden");
+      });
+
+      cssEditorTab.addEventListener("click", () => {
+        activeEditor = "css";
+        markdownEditorTab.classList.remove("tab-active");
+        cssEditorTab.classList.remove("tab-inactive");
+
+        markdownEditorTab.classList.add("tab-inactive");
+        cssEditorTab.classList.add("tab-active");
+
+        markdownEditorWrapper.classList.add("hidden");
+        cssEditorWrapper.classList.remove("hidden");
+      });
+
+      // Event Listeners for buttons
+      togglePreviewButton.addEventListener("click", () => {
+        if (previewContainer.classList.contains("hidden")) {
+          previewContainer.classList.remove("hidden");
+          editorContainer.classList.remove("w-full");
+          editorContainer.classList.add("w-1/2");
+        } else {
+          editorContainer.classList.remove("w-1/2");
+          editorContainer.classList.add("w-full");
+          previewContainer.classList.add("hidden");
+        }
+      });
+
+      editButton.addEventListener("click", () => {
+        // TODO: Handle edit logic
+      });
+
+      deleteButton.addEventListener("click", () => {
+        deleteResume(id);
+        window.location.href = "/dashboard.html";
+      });
+
+      function updatePreview(content) {
+        const parsedResume = marked(content);
+        resumeContent.innerHTML = parsedResume;
+      }
+
+      function injectResumeStyles(styles) {
+        const stylesEl = document.getElementById("injected-styles");
+        if (!stylesEl) {
+          const newStyles = document.createElement("style");
+          newStyles.id = "injected-styles";
+          newStyles.type = "text/css";
+          newStyles.innerHTML = resume.css;
+          document.head.appendChild(newStyles);
+        } else {
+          stylesEl.innerHTML = resume.css;
+        }
       }
     </script>
   </body>
