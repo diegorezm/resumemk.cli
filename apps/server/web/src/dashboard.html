@@ -107,9 +107,16 @@
         </div>
       </div>
     </div>
-    <script src="/modal.js" type="module"></script>
-    <script src="/resume_store.js" type="module"></script>
-    <script>
+    <script type="module">
+      import { setupModal } from "./modal.js";
+      import {
+        getResumes,
+        saveResume,
+        deleteResume,
+        generateResumeId,
+        DEFAULT_RESUME,
+        DEFAULT_STYLES,
+      } from "/resume_store.js";
       const createDocumentBtn = document.getElementById("create_document_btn");
       const documentNameInput = document.getElementById("document_name");
       const useTemplateInput = document.getElementById("use_template");

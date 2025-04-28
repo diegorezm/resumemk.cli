@@ -203,11 +203,15 @@
       </div>
     </div>
 
-    <script src="/modal.js" type="module"></script>
-    <script src="/resume_store.js" type="module"></script>
     <script type="module">
+      import * as monaco from "monaco-editor/esm/vs/editor/editor.api";
+      import "monaco-editor/esm/vs/basic-languages/css/css.contribution";
+      import "monaco-editor/esm/vs/basic-languages/markdown/markdown.contribution";
+
       import { marked } from "marked";
-      import * as monaco from "monaco-editor";
+
+      import { setupModal } from "./modal.js";
+      import { getResume, saveResume, deleteResume } from "/resume_store.js";
 
       fetch("/solarized_light.json")
         .then((data) => data.json())

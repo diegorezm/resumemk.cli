@@ -1,8 +1,9 @@
+import "monaco-editor/esm/vs/basic-languages/css/css.contribution";
 /**
  * Sets up a modal with open, close, and backdrop functionalities.
  * @param {function} [onClose] Function that executes when the modal is closed.
  */
-function setupModal(onClose) {
+export function setupModal(onClose) {
   const openModalBtns = document.querySelectorAll(".open-modal-btn");
   const closeModalBtns = document.querySelectorAll(".close-modal-btn");
   const modal = document.getElementById("my_modal");
