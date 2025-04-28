@@ -80,7 +80,7 @@
   }
 
   .tab {
-    @apply px-4 py-1 text-base font-bold rounded-t-lg rounded-b-none transition-colors duration-150 hover:cursor-pointer;
+    @apply inline-flex items-center justify-center gap-2 px-4 py-1 text-base font-bold rounded-t-lg rounded-b-none transition-colors duration-150 hover:cursor-pointer;
   }
 
   .tab-active {
