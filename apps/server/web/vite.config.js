@@ -38,4 +38,7 @@ export default defineConfig({
     },
   },
   plugins: [tailwindcss(), transformHtmlPlugin({ metadata: commonMetadata })],
+  optimizeDeps: {
+    include: ["monaco-editor/esm/vs/editor/editor.api"],
+  },
 });
