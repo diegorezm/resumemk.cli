@@ -1,3 +1,5 @@
+const DOCUMENT_LOCALSTORAGE_KEY = "resumemk_documents";
+
 export const DEFAULT_RESUME = `
 <center>
 
@@ -110,7 +112,7 @@ Full Stack Developer skilled in PHP, Java, and JavaScript/TypeScript. Seeking op
 <br>
 
 </div>
-`
+`;
 
 export const DEFAULT_STYLES = `
 :root {
@@ -188,4 +190,62 @@ export const DEFAULT_STYLES = `
 .resume strong {
   font-weight: bold;
 }
-`
+`;
+
+/**
+ * @typedef {Object} Resume
+ * @property {string} id
+ * @property {string} title
+ * @property {string} content
+ * @property {string} css
+ */
+
+/**
+ * @param {string} id
+ * @returns {Resume | undefined}
+ */
+export const getResume = (id) => {
+  const documents = getResumes();
+  return documents.find((document) => document.id === id);
+};
+
+/**
+ * @returns {Resume[]}
+ */
+export const getResumes = () => {
+  const documents = localStorage.getItem(DOCUMENT_LOCALSTORAGE_KEY);
+  if (!documents) {
+    return [];
+  }
+  return JSON.parse(documents);
+};
+
+/**
+ * @param {Resume} resume The resume
+ */
+export const saveResume = (resume) => {
+  const documents = getResumes();
+  const index = documents.findIndex((document) => document.id === resume.id);
+  if (index === -1) {
+    documents.push(resume);
+  } else {
+    documents[index] = resume;
+  }
+  localStorage.setItem(DOCUMENT_LOCALSTORAGE_KEY, JSON.stringify(documents));
+};
+
+/**
+ * @param {string} id
+ */
+export const deleteResume = (id) => {
+  const documents = getResumes();
+  const newDocuments = documents.filter((document) => document.id !== id);
+  localStorage.setItem(DOCUMENT_LOCALSTORAGE_KEY, JSON.stringify(newDocuments));
+};
+
+/**
+ * @returns {string}
+ */
+export const generateResumeId = () => {
+  return Date.now().toString(36) + Math.random().toString(36).substring(2, 15);
+};

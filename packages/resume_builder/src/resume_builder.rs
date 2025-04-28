@@ -169,7 +169,7 @@ impl TCPResumeBuilder {
         }
     }
 
-    fn save_to_html(
+    pub fn get_html(
         &self,
         markdown: &str,
         title: &str,
@@ -194,6 +194,16 @@ impl TCPResumeBuilder {
                 &format!("<style>{}{}</style>", &self.base_stylesheet, styles),
             )
             .replace("{title}", title);
+        Ok(html)
+    }
+
+    fn save_to_html(
+        &self,
+        markdown: &str,
+        title: &str,
+        stylesheet: Option<&str>,
+    ) -> Result<String, Box<dyn std::error::Error>> {
+        let html = self.get_html(markdown, title, stylesheet)?;
 
         let mut output_file = File::create(self.default_html_path.clone())?;
         output_file.write_all(html.as_bytes())?;
@@ -210,7 +220,7 @@ impl TCPResumeBuilder {
         markdown: &str,
         title: &str,
         stylesheet: Option<&str>,
-        pdf_options: PrintToPdfOptions,
+        pdf_options: Option<PrintToPdfOptions>,
     ) -> Vec<u8> {
         let html_file = self.save_to_html(markdown, title, stylesheet).unwrap();
         let html_url = format!("file://{}", html_file);
@@ -246,7 +256,7 @@ impl TCPResumeBuilder {
             .unwrap();
 
         let bytes = tab
-            .print_to_pdf(Some(pdf_options))
+            .print_to_pdf(pdf_options)
             .map_err(|e| {
                 eprintln!("Error while printing to PDF: {}", e);
             })

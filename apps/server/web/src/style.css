@@ -1,0 +1,143 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --background: #ede4d1;
+    --foreground: #282b2e;
+
+    --primary: #282b2e;
+    --on-primary: #ede4d1;
+
+    --secondary: #cfde67;
+    --on-secondary: #282b2e;
+
+    --tertiary: #c889bb;
+    --on-tertiary: #f0ece7;
+
+    --surface: #f0ece7;
+    --on-surface: #282b2e;
+
+    --error: #d81e5b;
+    --on-error: #000000;
+  }
+}
+
+@theme {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-primary: var(--primary);
+  --color-on-primary: var(--on-primary);
+
+  --color-secondary: var(--secondary);
+  --color-on-secondary: var(--on-secondary);
+
+  --color-tertiary: var(--tertiary);
+  --color-on-tertiary: var(--on-tertiary);
+
+  --color-surface: var(--surface);
+  --color-on-surface: var(--on-surface);
+
+  --color-error: var(--error);
+  --color-on-error: var(--on-error);
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center w-full justify-center rounded-lg hover:cursor-pointer transition-colors duration-200 gap-2 font-bold;
+  }
+
+  .btn-primary {
+    @apply bg-primary text-on-primary hover:bg-primary/90;
+  }
+
+  .btn-secondary {
+    @apply bg-secondary text-on-secondary hover:bg-secondary/90;
+  }
+
+  .btn-tertiary {
+    @apply bg-tertiary text-on-tertiary hover:bg-tertiary/90;
+  }
+
+  .btn-ghost {
+    @apply hover:bg-surface/90 text-foreground;
+  }
+
+  .btn-outline {
+    @apply bg-transparent border border-primary hover:bg-primary hover:text-on-primary;
+  }
+
+  .btn-sm {
+    @apply px-3 py-1 text-sm;
+  }
+
+  .btn-md {
+    @apply px-4 py-2 text-base;
+  }
+
+  .btn-lg {
+    @apply px-6 py-3 text-lg;
+  }
+
+  .tab {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-1 text-base font-bold rounded-t-lg rounded-b-none transition-colors duration-150 hover:cursor-pointer disabled:opacity-70;
+  }
+
+  .tab-active {
+    @apply bg-secondary text-on-secondary;
+  }
+
+  .tab-inactive {
+    @apply bg-surface text-on-surface;
+  }
+
+  .input {
+    @apply rounded-md bg-transparent text-on-surface border border-foreground/20 px-4 py-2 focus:outline-none focus:border-foreground;
+  }
+
+  .modal {
+    @apply fixed inset-0 z-50 items-center justify-center bg-black/50 px-6 lg:px-0;
+  }
+}
+
+/* https://uiverse.io/kennyotsu/short-warthog-33 */
+.dot-pattern {
+  background-color: var(--foreground);
+  background-image: radial-gradient(
+    rgba(255, 255, 255, 0.171) 2px,
+    transparent 0
+  );
+  background-size: 30px 30px;
+  background-position: -5px -5px;
+}
+
+.not-a {
+  height: calc(100% - 35px);
+}
+
+html,
+body {
+  font-family:
+    "Inter",
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    Oxygen,
+    Ubuntu,
+    Cantarell,
+    "Open Sans",
+    "Helvetica Neue",
+    sans-serif;
+  background-color: var(--background);
+  color: var(--foreground);
+  font-size: 16px;
+  font-optical-sizing: auto;
+  line-height: 1.5;
+  font-weight: 400;
+  font-style: normal;
+  scrollbar-color: var(--foreground) var(--background);
+  scrollbar-width: thin;
+  scroll-behavior: smooth;
+}
