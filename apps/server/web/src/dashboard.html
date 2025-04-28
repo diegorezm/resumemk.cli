@@ -10,7 +10,7 @@
         <img src="/favicon.ico" alt="App Logo" class="h-8 w-8" />
       </a>
       <div class="flex items-center">
-        <button class="btn btn-sm btn-ghost text-base" id="open_modal_btn">
+        <button class="btn btn-sm btn-ghost text-base open-modal-btn">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="24"
@@ -36,10 +36,7 @@
       class="mt-4 px-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 place-items-center gap-6 w-full"
     ></ul>
 
-    <div
-      class="fixed inset-0 z-50 items-center justify-center bg-black/50 hidden px-6 lg:px-0"
-      id="my_modal"
-    >
+    <div class="modal hidden" id="my_modal">
       <div
         class="bg-background rounded-lg shadow-lg p-6 w-full max-w-md m-auto my-16 transition-opacity duration-300"
       >
@@ -110,16 +107,17 @@
         </div>
       </div>
     </div>
+    <script src="/modal.js"></script>
     <script src="/resume_store.js"></script>
-    <script type="module">
-      const openModalBtn = document.getElementById("open_modal_btn");
-      const closeModalBtn = document.querySelectorAll(".close-modal-btn");
+    <script>
       const createDocumentBtn = document.getElementById("create_document_btn");
       const documentNameInput = document.getElementById("document_name");
       const useTemplateInput = document.getElementById("use_template");
-      const myModal = document.getElementById("my_modal");
       const resumesContainer = document.getElementById("resumes_container");
+      const myModal = document.getElementById("my_modal");
       let resumes = getResumes();
+
+      setupModal();
 
       createDocumentBtn.addEventListener("click", () => {
         const documentName = documentNameInput.value;
@@ -141,24 +139,6 @@
         } else {
           alert("Please enter a document name.");
         }
-      });
-
-      myModal.addEventListener("click", (e) => {
-        e.stopPropagation();
-        if (e.target === myModal) {
-          myModal.classList.add("hidden");
-        }
-      });
-
-      openModalBtn.addEventListener("click", () => {
-        myModal.classList.remove("hidden");
-        documentNameInput.focus();
-      });
-
-      closeModalBtn.forEach((btn) => {
-        btn.addEventListener("click", () => {
-          myModal.classList.add("hidden");
-        });
       });
 
       function displayResumes() {
