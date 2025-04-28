@@ -1,5 +1,4 @@
 import { defineConfig } from "vite";
-import { sync } from "glob";
 import tailwindcss from "@tailwindcss/vite";
 
 const commonMetadata = `
