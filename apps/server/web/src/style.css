@@ -94,6 +94,10 @@
   .input {
     @apply rounded-md bg-transparent text-on-surface border border-foreground/20 px-4 py-2 focus:outline-none focus:border-foreground;
   }
+
+  .modal {
+    @apply fixed inset-0 z-50 items-center justify-center bg-black/50 px-6 lg:px-0;
+  }
 }
 
 /* https://uiverse.io/kennyotsu/short-warthog-33 */
