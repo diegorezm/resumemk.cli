@@ -1,23 +1,25 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ede4d1;
-  --foreground: #282b2e;
+@layer base {
+  :root {
+    --background: #ede4d1;
+    --foreground: #282b2e;
 
-  --primary: #282b2e;
-  --on-primary: #ede4d1;
+    --primary: #282b2e;
+    --on-primary: #ede4d1;
 
-  --secondary: #cfde67;
-  --on-secondary: #282b2e;
+    --secondary: #cfde67;
+    --on-secondary: #282b2e;
 
-  --tertiary: #c889bb;
-  --on-tertiary: #f0ece7;
+    --tertiary: #c889bb;
+    --on-tertiary: #f0ece7;
 
-  --surface: #f0ece7;
-  --on-surface: #282b2e;
+    --surface: #f0ece7;
+    --on-surface: #282b2e;
 
-  --error: #d81e5b;
-  --on-error: #000000;
+    --error: #d81e5b;
+    --on-error: #000000;
+  }
 }
 
 @theme {
@@ -75,6 +77,18 @@
 
   .btn-lg {
     @apply px-6 py-3 text-lg;
+  }
+
+  .tab {
+    @apply px-4 py-1 text-base font-bold rounded-t-lg rounded-b-none transition-colors duration-150 hover:cursor-pointer;
+  }
+
+  .tab-active {
+    @apply bg-secondary text-on-secondary;
+  }
+
+  .tab-inactive {
+    @apply bg-surface text-on-surface;
   }
 
   .input {
