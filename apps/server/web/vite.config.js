@@ -34,11 +34,12 @@ export default defineConfig({
     cssMinify: true,
     minify: true,
     rollupOptions: {
-      input: sync("./src/**/*.[html,js,png,svg,ico]".replace(/\\/g, "/")),
+      input: {
+        index: "./src/index.html",
+        dashboard: "./src/dashboard.html",
+        resume: "./src/resume.html",
+      },
     },
   },
   plugins: [tailwindcss(), transformHtmlPlugin({ metadata: commonMetadata })],
-  optimizeDeps: {
-    include: ["monaco-editor/esm/vs/editor/editor.api"],
-  },
 });

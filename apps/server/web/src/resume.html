@@ -4,7 +4,9 @@
     <%= metadata %>
     <title>Resumemk | Resume</title>
   </head>
-  <body class="max-w-[1980px] mx-auto px-6 flex flex-col">
+  <body
+    class="max-w-[1980px] h-screen mx-auto px-6 flex flex-col overflow-y-hidden"
+  >
     <header class="flex justify-between items-center p-4">
       <div class="resume-title-group flex items-center gap-4">
         <h1
@@ -84,14 +86,14 @@
           </div>
         </div>
 
-        <div class="h-full border-3 border-secondary rounded-r-lg">
+        <div class="not-a border-3 border-secondary rounded-r-lg">
           <div id="markdown-editor-wrapper" class="h-full"></div>
           <div id="css-editor-wrapper" class="hidden h-full"></div>
         </div>
       </section>
       <!-- preview -->
       <section
-        class="w-1/2 transition-all duration-150 rounded-t-lg"
+        class="w-1/2 transition-all duration-150 rounded-t-lg h-full"
         id="preview_container"
       >
         <div class="flex gap-2 w-full justify-end">
@@ -141,7 +143,7 @@
           </button>
         </div>
         <div
-          class="resume h-full overflow-y-auto border-3 border-tertiary rounded-l-lg"
+          class="resume overflow-y-auto border-3 border-tertiary rounded-l-lg not-a"
           id="resume_content"
         ></div>
       </section>
@@ -201,8 +203,8 @@
       </div>
     </div>
 
-    <script src="/modal.js"></script>
-    <script src="/resume_store.js"></script>
+    <script src="/modal.js" type="module"></script>
+    <script src="/resume_store.js" type="module"></script>
     <script type="module">
       import { marked } from "marked";
       import * as monaco from "monaco-editor";
@@ -215,6 +217,11 @@
         });
 
       const resumeTitleElement = document.getElementById("resume_title");
+
+      const downloadMarkdownBtn = document.getElementById(
+        "download_markdown_btn",
+      );
+      const downloadPdfBtn = document.getElementById("download_pdf_btn");
 
       const updateDocumentBtn = document.getElementById("update_document_btn");
       const updateDocumentInput = document.getElementById("document_name");
@@ -348,6 +355,26 @@
         } else {
           alert("Please provide a valid name.");
         }
+      });
+
+      downloadMarkdownBtn.addEventListener("click", () => {
+        const link = document.createElement("a");
+        link.hidden = true;
+        link.href =
+          "data:text/plain;charset=utf-8," + encodeURIComponent(resume.content);
+        link.download = `${resume.title}.md`;
+        link.click();
+        link.remove();
+      });
+
+      downloadPdfBtn.addEventListener("click", () => {
+        downloadPdfBtn.disabled = true;
+        console.log("Download button disabled.");
+
+        setTimeout(() => {
+          downloadPdfBtn.disabled = false;
+          console.log("Download button re-enabled.");
+        }, 2000);
       });
 
       deleteButton.addEventListener("click", () => {
