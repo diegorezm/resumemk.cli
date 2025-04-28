@@ -169,7 +169,7 @@ impl TCPResumeBuilder {
         }
     }
 
-    fn save_to_html(
+    pub fn get_html(
         &self,
         markdown: &str,
         title: &str,
@@ -194,6 +194,16 @@ impl TCPResumeBuilder {
                 &format!("<style>{}{}</style>", &self.base_stylesheet, styles),
             )
             .replace("{title}", title);
+        Ok(html)
+    }
+
+    fn save_to_html(
+        &self,
+        markdown: &str,
+        title: &str,
+        stylesheet: Option<&str>,
+    ) -> Result<String, Box<dyn std::error::Error>> {
+        let html = self.get_html(markdown, title, stylesheet)?;
 
         let mut output_file = File::create(self.default_html_path.clone())?;
         output_file.write_all(html.as_bytes())?;
