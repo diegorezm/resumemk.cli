@@ -8,8 +8,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "1.0"        # Limit the container to 1 CPU
-          memory: "2G"       # Limit the container to 2GB of RAM
+          cpus: "1.0" # Limit the container to 1 CPU
+          memory: "2G" # Limit the container to 2GB of RAM
         reservations:
-          cpus: "0.5"        # Reserve 0.5 CPU
-          memory: "1G"       # Reserve 1GB of RAM
+          cpus: "0.5" # Reserve 0.5 CPU
+          memory: "1G" # Reserve 1GB of RAM

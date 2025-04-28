@@ -16,7 +16,7 @@ COPY apps/server/ ./apps/server/
 COPY packages/resume_builder/ ./packages/resume_builder/
 
 # Copy the frontend assets
-COPY --from=frontend-builder /usr/src/web/out ./apps/server/web/out
+COPY --from=frontend-builder /usr/src/web/dist ./apps/server/web/dist
 
 RUN rustup target add x86_64-unknown-linux-musl
 RUN cargo build -p resumemk_server --release --target=x86_64-unknown-linux-musl
