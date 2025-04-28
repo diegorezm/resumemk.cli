@@ -4,7 +4,7 @@
     <%= metadata %>
     <title>Resumemk | Dashboard</title>
   </head>
-  <body>
+  <body class="max-w-[1980px] mx-auto">
     <nav class="flex justify-between border-b-1 border-foreground px-6 py-2">
       <a href="/">
         <img src="/favicon.ico" alt="App Logo" class="h-8 w-8" />
@@ -111,7 +111,7 @@
       </div>
     </div>
     <script src="/resume_store.js"></script>
-    <script>
+    <script type="module">
       const openModalBtn = document.getElementById("open_modal_btn");
       const closeModalBtn = document.querySelectorAll(".close-modal-btn");
       const createDocumentBtn = document.getElementById("create_document_btn");
