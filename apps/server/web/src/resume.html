@@ -212,13 +212,10 @@
 
       import { setupModal } from "./modal.js";
       import { getResume, saveResume, deleteResume } from "/resume_store.js";
+      import solarizedLight from "./solarized_light.json";
 
-      fetch("/solarized_light.json")
-        .then((data) => data.json())
-        .then((data) => {
-          monaco.editor.defineTheme("solarized-light", data);
-          monaco.editor.setTheme("solarized-light");
-        });
+      monaco.editor.defineTheme("solarized-light", solarizedLight);
+      monaco.editor.setTheme("solarized-light");
 
       const resumeTitleElement = document.getElementById("resume_title");
 
