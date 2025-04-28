@@ -220,7 +220,7 @@ impl TCPResumeBuilder {
         markdown: &str,
         title: &str,
         stylesheet: Option<&str>,
-        pdf_options: PrintToPdfOptions,
+        pdf_options: Option<PrintToPdfOptions>,
     ) -> Vec<u8> {
         let html_file = self.save_to_html(markdown, title, stylesheet).unwrap();
         let html_url = format!("file://{}", html_file);
@@ -256,7 +256,7 @@ impl TCPResumeBuilder {
             .unwrap();
 
         let bytes = tab
-            .print_to_pdf(Some(pdf_options))
+            .print_to_pdf(pdf_options)
             .map_err(|e| {
                 eprintln!("Error while printing to PDF: {}", e);
             })

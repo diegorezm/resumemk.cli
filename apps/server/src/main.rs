@@ -1,137 +1,114 @@
-mod assets;
+use std::path::Path;
 
-use std::collections::HashMap;
-use std::net::SocketAddr;
-
-use http_body_util::combinators::BoxBody;
-use http_body_util::{BodyExt, Collected, Empty, Full};
-use hyper::body::{Bytes, Frame};
-use hyper::header::HeaderValue;
-use hyper::server::conn::http1;
-use hyper::service::service_fn;
-use hyper::{Method, Request, Response, StatusCode};
-use hyper_util::rt::TokioIo;
+use include_dir::{include_dir, Dir};
 use resume_builder::TCPResumeBuilder;
-use tokio::net::TcpListener;
+use serde::Deserialize;
+use thiserror::Error;
+use tide::Response;
 
-async fn server(
-    req: Request<hyper::body::Incoming>,
-) -> Result<Response<BoxBody<Bytes, hyper::Error>>, hyper::Error> {
-    match (req.method(), req.uri().path()) {
-        (&Method::GET, path) => render_asset(path),
-        (&Method::POST, "/api/gen_pdf") => {
-            let pdf_bytes = req.into_body().map_frame(|frame| {
-                let frame = if let Ok(data) = frame.into_data() {
-                    let data_str = String::from_utf8_lossy(&data);
-                    match serde_json::from_str::<HashMap<String, String>>(&data_str) {
-                        Ok(map) => {
-                            let resume_builder = TCPResumeBuilder::new();
+const STATIC_FILES: Dir = include_dir!("$CARGO_MANIFEST_DIR/web/dist");
 
-                            let title = map.get("title").map(|value| value.as_str());
-                            let content = map.get("content").map(|value| value.as_str());
-                            let stylesheet = map.get("css").map(|value| value.as_str());
+#[derive(Debug, Deserialize)]
+struct GeneratorRequest {
+    title: String,
+    markdown: String,
+    css: Option<String>,
+}
 
-                            if title.is_none() || content.is_none() {
-                                return Frame::data(Bytes::new());
-                            }
+async fn get_pdf(mut req: tide::Request<()>) -> tide::Result {
+    let GeneratorRequest {
+        title,
+        markdown,
+        css,
+    } = req.body_json().await?;
+    let stylesheet: Option<&str> = css.as_deref();
+    let rsmb = TCPResumeBuilder::new();
 
-                            let pdf_options = headless_chrome::types::PrintToPdfOptions::default();
+    let pdf = rsmb.to_pdf(&markdown, &title, stylesheet, None);
 
-                            let pdf = resume_builder.to_pdf(
-                                content.unwrap(),
-                                title.unwrap(),
-                                stylesheet,
-                                pdf_options,
-                            );
+    Ok(tide::Response::builder(200)
+        .header("Content-Type", "application/pdf")
+        .body(pdf)
+        .build())
+}
 
-                            Bytes::from(pdf)
-                        }
-                        Err(err) => {
-                            eprintln!("Error deserializing data: {:?}", err);
-                            Bytes::new()
-                        }
-                    }
-                } else {
-                    Bytes::new()
-                };
-                Frame::data(frame)
-            });
-            let pdf = pdf_bytes
-                .boxed()
-                .collect()
-                .await
-                .unwrap_or(Collected::default())
-                .to_bytes();
+async fn get_html(mut req: tide::Request<()>) -> tide::Result {
+    let GeneratorRequest {
+        title,
+        markdown,
+        css,
+    } = req.body_json().await?;
+    let stylesheet: Option<&str> = css.as_deref();
+    let rsmb = TCPResumeBuilder::new();
+    let html = rsmb
+        .get_html(&markdown, &title, stylesheet)
+        .map_err(|e| {
+            eprintln!("{}", e);
+            tide::Error::from_str(500, "Something went wrong.")
+        })
+        .unwrap();
 
-            if pdf.len() == 0 {
-                let mut error = Response::new(empty());
-                *error.status_mut() = StatusCode::INTERNAL_SERVER_ERROR;
-                return Ok(error);
+    Ok(tide::Response::builder(200)
+        .header("Content-Type", "text/html")
+        .body(html)
+        .build())
+}
+
+async fn serve_embedded(req: tide::Request<()>) -> tide::Result {
+    let mut path = req.url().path().trim_start_matches('/');
+    if path == "/" || path == "" {
+        path = "index.html";
+    }
+    let file = STATIC_FILES.get_file(path);
+    if let Some(file) = file {
+        let mime = mime_guess::from_path(path).first_or_octet_stream();
+        Ok(Response::builder(200)
+            .header("Content-Type", mime.as_ref())
+            .body(file.contents())
+            .build())
+    } else {
+        Ok(Response::builder(404).body("Not Found").build())
+    }
+}
+
+#[derive(Error, Debug)]
+enum ServerCreationError {
+    #[error("failed to serve directory")]
+    ServeDir(#[source] std::io::Error),
+}
+
+async fn serve(html_path: Option<String>) -> Result<(), ServerCreationError> {
+    use ServerCreationError::*;
+    let mut app = tide::new();
+    app.at("/").get(tide::Redirect::new("/index.html"));
+    if let Some(path_str) = html_path {
+        println!("Serving static files from path: {}", path_str);
+        let path = Path::new(&path_str);
+        app.at("/").serve_dir(path).unwrap();
+    } else {
+        app.at("/*").get(serve_embedded);
+    }
+    app.at("/api/get_html").post(get_html);
+    app.at("/api/get_pdf").post(get_pdf);
+    let addr = "127.0.0.1:8080";
+    println!("Listening at: {addr}");
+    app.listen(addr).await.map_err(ServeDir).unwrap();
+    Ok(())
+}
+
+#[async_std::main]
+async fn main() {
+    let mut args = std::env::args();
+    let mut html_path: Option<String> = None;
+
+    while let Some(arg) = args.next() {
+        match arg.as_str() {
+            "--html-path" => {
+                html_path = args.next().map(Into::into);
             }
-
-            let pdf_len = pdf.len().to_string();
-            let mut response = Response::new(full(pdf));
-            response
-                .headers_mut()
-                .append("Content-Type", HeaderValue::from_static("application/pdf"));
-            response
-                .headers_mut()
-                .append("Content-Length", HeaderValue::from_str(&pdf_len).unwrap());
-            Ok(response)
-        }
-        _ => render_asset("404"),
-    }
-}
-
-fn render_asset(path: &str) -> Result<Response<BoxBody<Bytes, hyper::Error>>, hyper::Error> {
-    let asset = assets::serve_asset(path);
-    match asset {
-        Ok((data, mime_type)) => {
-            let mut response = Response::new(full(data));
-            response.headers_mut().append(
-                "Content-Type",
-                HeaderValue::from_str(mime_type.as_str()).unwrap(),
-            );
-            Ok(response)
-        }
-        Err(_err) => {
-            let mut not_found = Response::new(empty());
-            *not_found.status_mut() = StatusCode::NOT_FOUND;
-            Ok(not_found)
+            _ => {}
         }
     }
-}
 
-fn empty() -> BoxBody<Bytes, hyper::Error> {
-    Empty::<Bytes>::new()
-        .map_err(|never| match never {})
-        .boxed()
-}
-fn full<T: Into<Bytes>>(chunk: T) -> BoxBody<Bytes, hyper::Error> {
-    Full::new(chunk.into())
-        .map_err(|never| match never {})
-        .boxed()
-}
-
-#[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
-    let port: u16 = std::env::var("PORT")
-        .unwrap_or_else(|_| "10000".to_string())
-        .parse()
-        .unwrap_or(1000);
-    let addr = SocketAddr::from(([0, 0, 0, 0], port));
-    let listener = TcpListener::bind(addr).await?;
-    println!("Listening on: http://localhost:{port}");
-    loop {
-        let (stream, _) = listener.accept().await?;
-        let io = TokioIo::new(stream);
-        tokio::task::spawn(async move {
-            if let Err(err) = http1::Builder::new()
-                .serve_connection(io, service_fn(server))
-                .await
-            {
-                eprintln!("Error serving connection: {:?}", err);
-            }
-        });
-    }
+    serve(html_path).await.unwrap();
 }
