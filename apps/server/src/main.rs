@@ -79,7 +79,14 @@ enum ServerCreationError {
 
 async fn serve(html_path: Option<String>) -> Result<(), ServerCreationError> {
     use ServerCreationError::*;
+    let address = std::env::var("ADDRESS").unwrap_or_else(|_| "0.0.0.0".to_string());
+    let port: u16 = std::env::var("PORT")
+        .unwrap_or_else(|_| "8080".to_string())
+        .parse()
+        .unwrap_or(8080);
+
     let mut app = tide::new();
+
     app.at("/").get(tide::Redirect::new("/index.html"));
     if let Some(path_str) = html_path {
         println!("Serving static files from path: {}", path_str);
@@ -88,9 +95,11 @@ async fn serve(html_path: Option<String>) -> Result<(), ServerCreationError> {
     } else {
         app.at("/*").get(serve_embedded);
     }
+
     app.at("/api/get_html").post(get_html);
     app.at("/api/get_pdf").post(get_pdf);
-    let addr = "127.0.0.1:8080";
+
+    let addr = format!("{}:{}", address, port);
     println!("Listening at: {addr}");
     app.listen(addr).await.map_err(ServeDir).unwrap();
     Ok(())
