@@ -1,112 +1,71 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <%= metadata %>
+
+<head>
+  <%= metadata %>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1120784261527576"
+      crossorigin="anonymous"></script>
     <title>Resumemk | Dashboard</title>
-  </head>
-  <body class="max-w-[1980px] mx-auto">
-    <nav class="flex justify-between border-b-1 border-foreground px-6 py-2">
-      <a href="/">
-        <img src="/favicon.ico" alt="App Logo" class="h-8 w-8" />
-      </a>
-      <div class="flex items-center">
-        <button class="btn btn-sm btn-ghost text-base open-modal-btn">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            class="lucide lucide-plus-icon lucide-plus"
-          >
-            <path d="M5 12h14" />
-            <path d="M12 5v14" />
+</head>
+
+<body class="max-w-[1980px] mx-auto">
+  <nav class="flex justify-between border-b-1 border-foreground px-6 py-2">
+    <a href="/">
+      <img src="/favicon.ico" alt="App Logo" class="h-8 w-8" />
+    </a>
+    <div class="flex items-center">
+      <button class="btn btn-sm btn-ghost text-base open-modal-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+          class="lucide lucide-plus-icon lucide-plus">
+          <path d="M5 12h14" />
+          <path d="M12 5v14" />
+        </svg>
+        New document
+      </button>
+    </div>
+  </nav>
+
+  <ul id="resumes_container"
+    class="mt-4 px-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 place-items-center gap-6 w-full"></ul>
+
+  <div class="modal hidden" id="my_modal">
+    <div class="bg-background rounded-lg shadow-lg p-6 w-full max-w-md m-auto my-16 transition-opacity duration-300">
+      <div class="flex justify-between items-start mb-4">
+        <h2 class="text-lg font-semibold text-foreground">
+          Create New Document
+        </h2>
+        <button class="close-modal-btn btn-ghost hover:cursor-pointer rounded-md" id="close_modal_btn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+            class="lucide lucide-x">
+            <path d="M18 6 6 18" />
+            <path d="m6 6 12 12" />
           </svg>
-          New document
         </button>
       </div>
-    </nav>
 
-    <ul
-      id="resumes_container"
-      class="mt-4 px-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 place-items-center gap-6 w-full"
-    ></ul>
+      <div class="mb-2">
+        <label for="document_name" class="block text-sm font-medium text-muted-foreground">Document Name</label>
+        <input type="text" id="document_name" placeholder="Enter document name" class="input w-full" />
+      </div>
 
-    <div class="modal hidden" id="my_modal">
-      <div
-        class="bg-background rounded-lg shadow-lg p-6 w-full max-w-md m-auto my-16 transition-opacity duration-300"
-      >
-        <div class="flex justify-between items-start mb-4">
-          <h2 class="text-lg font-semibold text-foreground">
-            Create New Document
-          </h2>
-          <button
-            class="close-modal-btn btn-ghost hover:cursor-pointer rounded-md"
-            id="close_modal_btn"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              class="lucide lucide-x"
-            >
-              <path d="M18 6 6 18" />
-              <path d="m6 6 12 12" />
-            </svg>
-          </button>
-        </div>
+      <div class="mb-4">
+        <input type="checkbox" id="use_template" class="mr-2 input" name="use_template" value="Use template" checked />
+        <label for="use_template" class="text-sm font-medium">Use Template</label>
+      </div>
 
-        <div class="mb-2">
-          <label
-            for="document_name"
-            class="block text-sm font-medium text-muted-foreground"
-            >Document Name</label
-          >
-          <input
-            type="text"
-            id="document_name"
-            placeholder="Enter document name"
-            class="input w-full"
-          />
-        </div>
-
-        <div class="mb-4">
-          <input
-            type="checkbox"
-            id="use_template"
-            class="mr-2 input"
-            name="use_template"
-            value="Use template"
-            checked
-          />
-          <label for="use_template" class="text-sm font-medium"
-            >Use Template</label
-          >
-        </div>
-
-        <div class="flex justify-end">
-          <button
-            class="btn btn-outline btn-sm mr-2 close-modal-btn"
-            id="cancel_btn"
-          >
-            Cancel
-          </button>
-          <button class="btn btn-primary btn-sm" id="create_document_btn">
-            Create
-          </button>
-        </div>
+      <div class="flex justify-end">
+        <button class="btn btn-outline btn-sm mr-2 close-modal-btn" id="cancel_btn">
+          Cancel
+        </button>
+        <button class="btn btn-primary btn-sm" id="create_document_btn">
+          Create
+        </button>
       </div>
     </div>
-    <script type="module" src="/dashboard.js"></script>
-  </body>
+  </div>
+  <script type="module" src="/dashboard.js"></script>
+</body>
+
 </html>
