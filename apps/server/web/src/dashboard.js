@@ -1,6 +1,7 @@
 import { setupModal } from "./modal.js";
 import {
   getResumes,
+  getResume,
   saveResume,
   deleteResume,
   generateResumeId,
@@ -117,7 +118,7 @@ function displayResumes() {
       button.addEventListener("click", () => {
         button.disabled = true;
         const id = button.dataset.id
-        const r = getResumes(id)
+        const r = getResume(id)
         get_pdf(r)
           .then(() => {
             button.disabled = false;
