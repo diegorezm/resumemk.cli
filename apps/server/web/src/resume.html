@@ -1,208 +1,146 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <%= metadata %>
+
+<head>
+  <%= metadata %>
     <title>Resumemk | Resume</title>
-  </head>
-  <body
-    class="max-w-[1980px] h-screen mx-auto px-6 flex flex-col overflow-y-hidden"
-  >
-    <header class="flex justify-between items-center p-4">
-      <div class="resume-title-group flex items-center gap-4">
-        <h1
-          id="resume_title"
-          class="text-xl font-semibold text-foreground"
-        ></h1>
-        <div class="button-group flex gap-2">
-          <button class="btn btn-sm btn-ghost open-modal-btn">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              class="lucide lucide-pencil-icon lucide-pencil"
-            >
-              <path
-                d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"
-              />
-              <path d="m15 5 4 4" />
-            </svg>
-          </button>
-          <button id="delete_button" class="btn btn-sm btn-ghost">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              class="lucide lucide-trash2-icon lucide-trash-2"
-            >
-              <path d="M3 6h18" />
-              <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
-              <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
-              <line x1="10" x2="10" y1="11" y2="17" />
-              <line x1="14" x2="14" y1="11" y2="17" />
-            </svg>
-          </button>
-        </div>
+</head>
+
+<body class="max-w-[1980px] h-screen mx-auto px-6 flex flex-col overflow-y-hidden">
+  <header class="flex justify-between items-center p-2 mt-2 mb-2 bg-surface rounded-lg">
+    <div class="resume-title-group flex w-1/3 justify-start  items-center gap-4">
+      <div>
+        <a href="/dashboard.html" class="btn btn-ghost btn-sm">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+            class="lucide lucide-chevron-left-icon lucide-chevron-left">
+            <path d="m15 18-6-6 6-6" />
+          </svg>
+        </a>
       </div>
       <div>
-        <button id="toggle_preview_button" class="btn btn-sm btn-tertiary">
-          Toggle Preview
+        <h1 id="resume_title" class="text-xl block w-full font-semibold text-foreground"></h1>
+      </div>
+      <div class="button-group flex gap-2">
+        <button class="btn btn-sm btn-ghost open-modal-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+            class="lucide lucide-pencil-icon lucide-pencil">
+            <path
+              d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" />
+            <path d="m15 5 4 4" />
+          </svg>
+        </button>
+        <button id="delete_button" class="btn btn-sm btn-ghost">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+            class="lucide lucide-trash2-icon lucide-trash-2">
+            <path d="M3 6h18" />
+            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+            <line x1="10" x2="10" y1="11" y2="17" />
+            <line x1="14" x2="14" y1="11" y2="17" />
+          </svg>
         </button>
       </div>
-    </header>
+    </div>
+    <div>
+      <button id="toggle_preview_button" class="btn btn-sm btn-outline">
+        Toggle Preview
+      </button>
+    </div>
+  </header>
 
-    <main class="main-content flex flex-grow overflow-hidden gap-2">
-      <!-- editors  -->
-      <section id="editor-container" class="w-1/2 transition-all duration-150">
-        <div class="flex gap-2">
-          <div>
-            <button
-              class="tab tab-active"
-              data-editor="markdown"
-              id="markdown-editor-tab"
-            >
-              Markdown Editor
-            </button>
-          </div>
-          <div>
-            <button
-              class="tab tab-inactive"
-              data-editor="css"
-              id="css-editor-tab"
-            >
-              CSS Editor
-            </button>
-          </div>
-        </div>
-
-        <div class="not-a border-3 border-secondary rounded-r-lg">
-          <div id="markdown-editor-wrapper" class="h-full"></div>
-          <div id="css-editor-wrapper" class="hidden h-full"></div>
-        </div>
-      </section>
-      <!-- preview -->
-      <section
-        class="w-1/2 transition-all duration-150 rounded-t-lg h-full"
-        id="preview_container"
-      >
-        <div class="flex gap-2 w-full justify-end">
-          <button
-            class="tab bg-tertiary text-on-tertiary"
-            id="download_markdown_btn"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              class="lucide lucide-download-icon lucide-download"
-            >
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-              <polyline points="7 10 12 15 17 10" />
-              <line x1="12" x2="12" y1="15" y2="3" />
-            </svg>
-            MARKDOWN
-          </button>
-          <button
-            class="tab bg-tertiary text-on-tertiary"
-            id="download_pdf_btn"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              class="lucide lucide-download-icon lucide-download"
-            >
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-              <polyline points="7 10 12 15 17 10" />
-              <line x1="12" x2="12" y1="15" y2="3" />
-            </svg>
-            PDF
+  <main class="main-content flex flex-grow overflow-hidden gap-2">
+    <!-- editors  -->
+    <section id="editor-container" class="w-1/2 transition-all duration-150">
+      <div class="flex gap-2">
+        <div>
+          <button class="tab tab-active" data-editor="markdown" id="markdown-editor-tab">
+            Markdown Editor
           </button>
         </div>
-        <div
-          class="resume overflow-y-auto border-3 border-tertiary rounded-l-lg not-a"
-          id="resume_content"
-        ></div>
-      </section>
-    </main>
-    <div class="modal hidden" id="my_modal">
-      <div
-        class="bg-background rounded-lg shadow-lg p-6 w-full max-w-md m-auto my-16 transition-opacity duration-300"
-      >
-        <div class="flex justify-between items-start mb-4">
-          <h2 class="text-lg font-semibold text-foreground">
-            Update this document
-          </h2>
-          <button
-            class="close-modal-btn btn-ghost hover:cursor-pointer rounded-md"
-            id="close_modal_btn"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              class="lucide lucide-x"
-            >
-              <path d="M18 6 6 18" />
-              <path d="m6 6 12 12" />
-            </svg>
+        <div>
+          <button class="tab tab-inactive" data-editor="css" id="css-editor-tab">
+            CSS Editor
           </button>
         </div>
+      </div>
 
-        <div class="mb-4">
-          <label
-            for="document_name"
-            class="block text-sm font-medium text-muted-foreground"
-            >Document Name</label
-          >
-          <input
-            type="text"
-            id="document_name"
-            placeholder="Enter document name"
-            class="input w-full"
-          />
-        </div>
+      <div class="not-a border-3 border-primary rounded-r-lg">
+        <div id="markdown-editor-wrapper" class="h-full"></div>
+        <div id="css-editor-wrapper" class="hidden h-full"></div>
+      </div>
+    </section>
+    <!-- preview -->
+    <section class="w-1/2 transition-all duration-150 rounded-t-lg h-full" id="preview_container">
+      <div class="flex gap-2 w-full justify-end">
+        <button class="tab bg-surface text-on-surface" id="download_markdown_btn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+            class="lucide lucide-download-icon lucide-download">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="7 10 12 15 17 10" />
+            <line x1="12" x2="12" y1="15" y2="3" />
+          </svg>
+          MARKDOWN
+        </button>
+        <button class="tab bg-secondary text-on-secondary" id="download_pdf_btn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+            class="lucide lucide-download-icon lucide-download">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="7 10 12 15 17 10" />
+            <line x1="12" x2="12" y1="15" y2="3" />
+          </svg>
+          PDF
+        </button>
+      </div>
+      <div class="resume overflow-y-auto border-3 border-secondary rounded-l-lg not-a" id="resume_content"></div>
+    </section>
+  </main>
 
-        <div class="flex justify-end">
-          <button class="btn btn-outline btn-sm mr-2 close-modal-btn">
+  <div class="modal hidden" id="my_modal">
+    <form
+      class="bg-background rounded shadow-lg p-6 w-full max-w-md m-auto my-16 transition-opacity duration-300 space-y-4"
+      id="update_document_form">
+
+      <div class="flex justify-between items-start mb-4">
+        <h2 class="text-lg font-semibold text-foreground">
+          Update this document
+        </h2>
+        <button class="close-modal-btn btn-ghost hover:cursor-pointer rounded-md" id="close_modal_btn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+            class="lucide lucide-x">
+            <path d="M18 6 6 18" />
+            <path d="m6 6 12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <div class="space-y-2">
+        <label for="document_name" class="block text-sm font-medium text-muted-foreground">Document Name</label>
+        <input type="text" id="document_name" placeholder="Enter document name" class="input w-full" />
+      </div>
+
+      <div class="flex justify-start gap-2">
+        <div>
+          <button type="button" class="btn btn-outline btn-md mr-2 close-modal-btn">
             Cancel
           </button>
-          <button class="btn btn-primary btn-sm" id="update_document_btn">
+        </div>
+        <div>
+          <button class="btn btn-primary btn-md" id="update_document_btn">
             Update
           </button>
         </div>
       </div>
-    </div>
+    </form>
 
-    <script type="module" src="/resume.js"></script>
-  </body>
+  </div>
+
+  <script type="module" src="/resume.js"></script>
+</body>
+
 </html>

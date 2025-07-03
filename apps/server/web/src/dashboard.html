@@ -3,8 +3,6 @@
 
 <head>
   <%= metadata %>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1120784261527576"
-      crossorigin="anonymous"></script>
     <title>Resumemk | Dashboard</title>
 </head>
 
@@ -30,7 +28,7 @@
     class="mt-4 px-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 place-items-center gap-6 w-full"></ul>
 
   <div class="modal hidden" id="my_modal">
-    <div class="bg-background rounded-lg shadow-lg p-6 w-full max-w-md m-auto my-16 transition-opacity duration-300">
+    <div class="bg-background rounded shadow-lg p-6 w-full max-w-md m-auto my-16 transition-opacity duration-300">
       <div class="flex justify-between items-start mb-4">
         <h2 class="text-lg font-semibold text-foreground">
           Create New Document
@@ -45,24 +43,32 @@
         </button>
       </div>
 
-      <div class="mb-2">
-        <label for="document_name" class="block text-sm font-medium text-muted-foreground">Document Name</label>
-        <input type="text" id="document_name" placeholder="Enter document name" class="input w-full" />
-      </div>
+      <form class="space-y-4" id="create_document_form">
+        <div class="space-y-1">
+          <label for="document_name" class="block text-sm font-medium text-muted-foreground">Document Name</label>
+          <input type="text" id="document_name" name="name" placeholder="Enter document name" class="input w-full"
+            autofocus />
+        </div>
 
-      <div class="mb-4">
-        <input type="checkbox" id="use_template" class="mr-2 input" name="use_template" value="Use template" checked />
-        <label for="use_template" class="text-sm font-medium">Use Template</label>
-      </div>
+        <div>
+          <input type="checkbox" id="use_template" class="mr-2 input" name="use_template" value="Use template"
+            checked />
+          <label for="use_template" name="use_template" class="text-sm font-medium">Use Template</label>
+        </div>
 
-      <div class="flex justify-end">
-        <button class="btn btn-outline btn-sm mr-2 close-modal-btn" id="cancel_btn">
-          Cancel
-        </button>
-        <button class="btn btn-primary btn-sm" id="create_document_btn">
-          Create
-        </button>
-      </div>
+        <div class="flex justify-start gap-2">
+          <div>
+            <button class="btn btn-outline btn-md mr-2 close-modal-btn" type="button" id="cancel_btn">
+              Cancel
+            </button>
+          </div>
+          <div>
+            <button class="btn btn-primary btn-md" id="create_document_btn">
+              Create
+            </button>
+          </div>
+        </div>
+      </form>
     </div>
   </div>
   <script type="module" src="/dashboard.js"></script>

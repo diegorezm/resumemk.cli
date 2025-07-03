@@ -8,31 +8,43 @@ import {
   DEFAULT_STYLES,
 } from "/resume_store.js";
 import { get_pdf } from "/request.js";
-const createDocumentBtn = document.getElementById("create_document_btn");
+const createDocumentForm = document.getElementById("create_document_form");
+/** @type {HTMLInputElement} **/
 const documentNameInput = document.getElementById("document_name");
-const useTemplateInput = document.getElementById("use_template");
 const resumesContainer = document.getElementById("resumes_container");
 const myModal = document.getElementById("my_modal");
 let resumes = getResumes();
 
-setupModal();
+setupModal({
+  onOpen: () => {
+    setTimeout(() => {
+      documentNameInput.focus()
+    }, 50)
+  }
+});
 
-createDocumentBtn.addEventListener("click", () => {
-  const documentName = documentNameInput.value;
-  const useTemplate = useTemplateInput.checked;
+createDocumentForm.addEventListener("submit", (e) => {
+  e.preventDefault()
+  const form = e.target
+  const formData = new FormData(form)
+
+  const documentName = formData.get("name")
+  const useTemplate = formData.get("use_template")
+
   if (documentName && documentName.trim() !== "") {
     const docId = generateResumeId();
     const resume = {
       id: docId,
       title: documentName,
       content: useTemplate ? DEFAULT_RESUME : "",
-      css: useTemplate ? DEFAULT_STYLES : "",
+      css: DEFAULT_STYLES,
     };
 
     saveResume(resume);
     resumes.push(resume);
-    documentNameInput.value = "";
     displayResumes();
+    form.reset()
+    window.location.href = `/resume.html?id=${docId}`
     myModal.classList.add("hidden");
   } else {
     alert("Please enter a document name.");
@@ -43,7 +55,7 @@ function displayResumes() {
   resumesContainer.innerHTML = "";
   if (!resumes || resumes.length === 0) {
     resumesContainer.innerHTML =
-      "<p class='text-gray-500 text-center'>No resumes created yet.</p>";
+      "<p class='text-primary text-2xl font-semibold col-span-full'>No resumes created yet.</p>";
     return;
   }
 
@@ -101,7 +113,7 @@ function displayResumes() {
 
     const downlaodButtons = document.querySelectorAll(".btn-download-resume");
     downlaodButtons.forEach((button) => {
-      button.addEventListener("click", (event) => {
+      button.addEventListener("click", () => {
         button.disabled = true;
         get_pdf(resume)
           .then(() => {
@@ -115,10 +127,12 @@ function displayResumes() {
       });
     });
 
+    /** @type NodeListOf<HTMLButtonElement> **/
     const deleteButtons = document.querySelectorAll(".btn-remove-resume");
     deleteButtons.forEach((button) => {
-      button.addEventListener("click", (event) => {
-        deleteResume(resume.id);
+      button.addEventListener("click", () => {
+        const id = button.dataset.id
+        deleteResume(id);
         resumes = getResumes();
         displayResumes();
       });

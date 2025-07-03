@@ -1,11 +1,21 @@
 /**
  * Sets up a modal with open, close, and backdrop functionalities.
- * @param {function} [onClose] Function that executes when the modal is closed.
+ *
+ * @param {Object} [options] - Configuration object.
+ * @param {function} [options.onOpen] - Function that executes when the modal is opened.
+ * @param {function} [options.onClose] - Function that executes when the modal is closed.
  */
-export function setupModal(onClose) {
+export function setupModal({ onOpen, onClose } = {}) {
   const openModalBtns = document.querySelectorAll(".open-modal-btn");
   const closeModalBtns = document.querySelectorAll(".close-modal-btn");
   const modal = document.getElementById("my_modal");
+
+  modal.addEventListener("keyup", (e) => {
+    if (e.key === "Escape") {
+      modal.classList.toggle("hidden");
+    }
+
+  })
 
   if (!openModalBtns || !modal) {
     console.error("One or more modal elements not found.");
@@ -21,6 +31,9 @@ export function setupModal(onClose) {
 
   openModalBtns.forEach((btn) => {
     btn.addEventListener("click", () => {
+      if (onOpen) {
+        onOpen()
+      }
       modal.classList.remove("hidden");
     });
   });

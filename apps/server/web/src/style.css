@@ -2,23 +2,20 @@
 
 @layer base {
   :root {
-    --background: #ede4d1;
-    --foreground: #282b2e;
+    --background: oklch(0.9462 0.0111 89.72);
+    --foreground: oklch(0.3062 0.006 78.24);
 
-    --primary: #282b2e;
-    --on-primary: #ede4d1;
+    --primary: oklch(0.3062 0.006 78.24);
+    --on-primary: oklch(0.9462 0.0111 89.72);
 
-    --secondary: #cfde67;
-    --on-secondary: #282b2e;
+    --secondary: oklch(0.75 0.01 270);
+    --on-secondary: oklch(0.25 0.01 270);
 
-    --tertiary: #c889bb;
-    --on-tertiary: #f0ece7;
+    --surface: oklch(0.92 0.01 270);
+    --on-surface: oklch(0.25 0.01 270);
 
-    --surface: #f0ece7;
-    --on-surface: #282b2e;
-
-    --error: #d81e5b;
-    --on-error: #000000;
+    --error: oklch(0.55 0.25 20);
+    --on-error: oklch(0.1 0 0);
   }
 }
 
@@ -32,9 +29,6 @@
   --color-secondary: var(--secondary);
   --color-on-secondary: var(--on-secondary);
 
-  --color-tertiary: var(--tertiary);
-  --color-on-tertiary: var(--on-tertiary);
-
   --color-surface: var(--surface);
   --color-on-surface: var(--on-surface);
 
@@ -44,7 +38,7 @@
 
 @layer components {
   .btn {
-    @apply inline-flex items-center w-full justify-center rounded-lg hover:cursor-pointer transition-colors duration-200 gap-2 font-bold;
+    @apply inline-flex items-center w-full justify-center rounded hover:cursor-pointer transition-colors duration-200 gap-2 font-bold;
   }
 
   .btn-primary {
@@ -53,10 +47,6 @@
 
   .btn-secondary {
     @apply bg-secondary text-on-secondary hover:bg-secondary/90;
-  }
-
-  .btn-tertiary {
-    @apply bg-tertiary text-on-tertiary hover:bg-tertiary/90;
   }
 
   .btn-ghost {
@@ -80,11 +70,11 @@
   }
 
   .tab {
-    @apply inline-flex items-center justify-center gap-2 px-4 py-1 text-base font-bold rounded-t-lg rounded-b-none transition-colors duration-150 hover:cursor-pointer disabled:opacity-70;
+    @apply inline-flex items-center justify-center gap-2 px-4 py-1 text-base font-bold rounded-t-sm rounded-b-none transition-colors duration-150 hover:cursor-pointer disabled:opacity-70;
   }
 
   .tab-active {
-    @apply bg-secondary text-on-secondary;
+    @apply bg-primary text-on-primary;
   }
 
   .tab-inactive {
@@ -103,10 +93,8 @@
 /* https://uiverse.io/kennyotsu/short-warthog-33 */
 .dot-pattern {
   background-color: var(--foreground);
-  background-image: radial-gradient(
-    rgba(255, 255, 255, 0.171) 2px,
-    transparent 0
-  );
+  background-image: radial-gradient(rgba(255, 255, 255, 0.171) 2px,
+      transparent 0);
   background-size: 30px 30px;
   background-position: -5px -5px;
 }

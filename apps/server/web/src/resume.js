@@ -7,9 +7,9 @@ import { marked } from "marked";
 import { setupModal } from "./modal.js";
 import { getResume, saveResume, deleteResume } from "/resume_store.js";
 import { get_pdf } from "./request.js";
-import solarizedLight from "./solarized_light.json";
+import iplastic from "./IPlastic.json";
 
-monaco.editor.defineTheme("solarized-light", solarizedLight);
+monaco.editor.defineTheme("solarized-light", iplastic);
 monaco.editor.setTheme("solarized-light");
 
 const resumeTitleElement = document.getElementById("resume_title");
@@ -17,8 +17,8 @@ const resumeTitleElement = document.getElementById("resume_title");
 const downloadMarkdownBtn = document.getElementById("download_markdown_btn");
 const downloadPdfBtn = document.getElementById("download_pdf_btn");
 
-const updateDocumentBtn = document.getElementById("update_document_btn");
 const updateDocumentInput = document.getElementById("document_name");
+const updateDocumentForm = document.getElementById("update_document_form")
 
 const deleteButton = document.getElementById("delete_button");
 
@@ -52,9 +52,16 @@ let activeEditor = "markdown";
 
 documentNameInput.value = resume.title;
 
-setupModal(() => {
-  documentNameInput.value = resume.title;
-});
+setupModal({
+  onOpen: () => {
+    setTimeout(() => {
+      updateDocumentInput.focus()
+    }, 50)
+  },
+  onClose: () => {
+    documentNameInput.value = resume.title;
+  }
+})
 
 // Initialize Markdown Editor
 markdownEditor = monaco.editor.create(markdownEditorWrapper, {
@@ -82,7 +89,7 @@ cssEditorWrapper.classList.add("hidden");
 updatePreview(resume.content);
 injectResumeStyles(resume.css);
 
-markdownEditor.onDidChangeModelContent((event) => {
+markdownEditor.onDidChangeModelContent(() => {
   const newContent = markdownEditor.getValue();
   resume.content = newContent;
   saveResume(resume);
@@ -91,7 +98,7 @@ markdownEditor.onDidChangeModelContent((event) => {
 });
 
 // Event listener for CSS editor changes
-cssEditor.onDidChangeModelContent((event) => {
+cssEditor.onDidChangeModelContent(() => {
   const newCss = cssEditor.getValue();
   resume.css = newCss;
   saveResume(resume);
@@ -137,13 +144,16 @@ togglePreviewButton.addEventListener("click", () => {
   }
 });
 
-updateDocumentBtn.addEventListener("click", () => {
+updateDocumentForm.addEventListener("submit", (e) => {
+  e.preventDefault()
   const newTitle = updateDocumentInput.value;
   if (newTitle && newTitle.trim() != "") {
     resume.title = newTitle;
     resumeTitleElement.textContent = newTitle;
+    updateDocumentInput.value = newTitle
     saveResume(resume);
     myModal.classList.add("hidden");
+
   } else {
     alert("Please provide a valid name.");
   }
