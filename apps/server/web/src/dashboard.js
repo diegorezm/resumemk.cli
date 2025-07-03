@@ -111,11 +111,14 @@ function displayResumes() {
 
     resumesContainer.appendChild(listItem);
 
+    /** @type NodeListOf<HTMLButtonElement> **/
     const downlaodButtons = document.querySelectorAll(".btn-download-resume");
     downlaodButtons.forEach((button) => {
       button.addEventListener("click", () => {
         button.disabled = true;
-        get_pdf(resume)
+        const id = button.dataset.id
+        const r = getResumes(id)
+        get_pdf(r)
           .then(() => {
             button.disabled = false;
           })
