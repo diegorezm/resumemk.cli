@@ -120,13 +120,12 @@ function displayResumes() {
         const id = button.dataset.id
         const r = getResume(id)
         get_pdf(r)
-          .then(() => {
+          .finally(() => {
             button.disabled = false;
           })
           .catch((e) => {
             console.error(e);
             alert("Something went wrong.");
-            button.disabled = false;
           });
       });
     });
