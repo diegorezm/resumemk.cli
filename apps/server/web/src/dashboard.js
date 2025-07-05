@@ -38,7 +38,7 @@ createDocumentForm.addEventListener("submit", (e) => {
       id: docId,
       title: documentName,
       content: useTemplate ? DEFAULT_RESUME : "",
-      css: DEFAULT_STYLES,
+      css: useTemplate ? DEFAULT_STYLES : "",
     };
 
     saveResume(resume);
