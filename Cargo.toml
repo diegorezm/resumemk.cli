@@ -1,3 +1,3 @@
 [workspace]
-members = ["apps/*", "packages/*"]
+members = ["cli/", "resume_builder/"]
 resolver = "2"
